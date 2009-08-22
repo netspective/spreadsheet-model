@@ -19,4 +19,6 @@ public class MessageCodeFactory
     public static final String FINPCT_INVALID  = "E-FINPCT-0000";
     
     public static final String HS_INVALID_PRIORITY = "E-HS-0000";
+    
+    public static final String SEG_ARCH_INVALID_CODE = "E-SEGARCH-0000";
 }

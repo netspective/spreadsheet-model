@@ -76,6 +76,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
     private final FundingSourceNodeRule fundingSourceNodeRule;
     private final DefaultColumn homelandSecurityPrioritiesColumn;
     private final DefaultColumn finSystemPctColumn;
+    private final DefaultColumn segArchColumn;
 
     public class PercentageRule implements CellValidationRule
     {
@@ -100,7 +101,8 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
 
         public InvestmentNodeRule()
         {
-            final TextRegExRule descrTruncatedRule = new TextRegExRule(MessageCodeFactory.DESCR_TRUNCATED, ".+[\\.\\,\\!\\?\\(\\)\\{\\}\\[\\]\\<\\>\\'\\\"]$", "An investment description value seems to be truncated at %s. Please ensure that it is properly summarized, and not simply truncated (should end with proper sentence punctuation like '%3$s').");
+            final TextRegExRule descrTruncatedRule = new TextRegExRule(MessageCodeFactory.DESCR_TRUNCATED, ".+[\\.\\,\\!\\?\\(\\)\\{\\}\\[\\]\\<\\>\\'\\\"]$", "An investment description value seems to be truncated at %s. Please ensure that it is properly summarized, and not simply truncated (should end with proper sentence punctuation like with the following valid characters: . , ! ? ( ) { } [ ] < > ' \").");
+            final TextRegExRule segArchRule = new TextRegExRule(MessageCodeFactory.SEG_ARCH_INVALID_CODE, "^[0-9]{3}-[0-9]{3}$", "Invalid segement architecture code '%2$s' at %1$s. It should look like 000-000.");
             final Set<Integer> validHSPriorities = new HashSet<Integer>();
             for(int i = 1; i <= 6; i++) validHSPriorities.add(i);
 
@@ -108,6 +110,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
             cellValidationRules.put(descrColumn, new CellValidationRule[] { descrTruncatedRule });
             cellValidationRules.put(homelandSecurityPrioritiesColumn, new CellValidationRule[] { new IntegerEnumerationRule(MessageCodeFactory.HS_INVALID_PRIORITY, validHSPriorities) });
             cellValidationRules.put(finSystemPctColumn, new CellValidationRule[] { new PercentageRule(MessageCodeFactory.FINPCT_INVALID) });
+            cellValidationRules.put(segArchColumn, new CellValidationRule[] { segArchRule });
 
             delegateRule = new ValidateNodeColumnData(cellValidationRules);
         }
@@ -200,7 +203,8 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
         columns.add(new DefaultColumn(stringValueHandler, groupNamesRowNumber, columnHeadingsRowNumber,15, "CY", steadyState));
         columns.add(new DefaultColumn(stringValueHandler, groupNamesRowNumber, columnHeadingsRowNumber,16, "BY", steadyState));
 
-        columns.add(new DefaultColumn(stringValueHandler, groupNamesRowNumber, columnHeadingsRowNumber,17, "Segment Architecture (6 digit code)"));
+        segArchColumn = new DefaultColumn(stringValueHandler, groupNamesRowNumber, columnHeadingsRowNumber,17, "Segment Architecture (6 digit code)");
+        columns.add(segArchColumn);
 
         for(final Column column : columns)
             columnsMapByIndex.put(column.getColumnIndex(), column);
