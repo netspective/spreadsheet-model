@@ -8,7 +8,7 @@
     <property name="module.build.deploy.main.home"  value="${module.build.home}/tmp/deploy"/>
     <property name="module.lib.home"                value="${module.home}/lib"/>
     <property name="module.jar.home"                value="${module.lib.home}"/>
-    <property name="module.jar.name"                value="spreadsheet-to-table.jar"/>
+    <property name="module.jar.name"                value="spreadsheet-model.jar"/>
 
     <path id="module.classpath.runtime">
         <fileset dir="${module.lib.home}/runtime" includes="**/*.jar"/>
