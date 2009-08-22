@@ -1,0 +1,1943 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:fea="urn:us:gov:omb:fea" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:us:gov:omb:fea" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2.3">
+  <xs:element name="FederalEnterpriseArchitecture" type="fea:FederalEnterpriseArchitectureType">
+    <xs:annotation>
+      <xs:documentation>
+			This is the root element for the Federal Enterprise Architecture XSD. The Federal Reference Models(BRM,PRM,SRM,TRM) should be used for the OMB 300 XSD.
+			</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <!--Complex Types-->
+  <xs:complexType name="FederalEnterpriseArchitectureType">
+    <xs:sequence>
+      <xs:element ref="fea:BusinessReferenceModel" />
+      <xs:element ref="fea:ServiceComponentReferenceModel" />
+      <xs:element ref="fea:TechnicalReferenceModel" />
+      <xs:element ref="fea:PerformanceReferenceModel" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="BusinessAreaType">
+    <xs:sequence>
+      <xs:element ref="fea:BusinessAreaName" />
+      <xs:element ref="fea:BusinessAreaDefinitionText" minOccurs="0" />
+      <xs:element ref="fea:BusinessLineDetails" />
+    </xs:sequence>
+    <xs:attribute name="businessAreaID" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:NMTOKEN">
+          <xs:enumeration value="1" />
+          <xs:enumeration value="2" />
+          <xs:enumeration value="3" />
+          <xs:enumeration value="4" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="BusinessAreaDetailsType">
+    <xs:sequence>
+      <xs:element ref="fea:BusinessArea" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="BusinessLineType">
+    <xs:sequence>
+      <xs:element ref="fea:BusinessLineName" />
+      <xs:element ref="fea:BusinessLineDefinitionText" minOccurs="0" />
+      <xs:element ref="fea:SubFunctionDetails" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute name="refbusinessAreaID" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:NMTOKEN">
+          <xs:enumeration value="1" />
+          <xs:enumeration value="2" />
+          <xs:enumeration value="3" />
+          <xs:enumeration value="4" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="businessLineID" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:NMTOKEN">
+          <xs:enumeration value="00" />
+          <xs:enumeration value="101" />
+          <xs:enumeration value="102" />
+          <xs:enumeration value="103" />
+          <xs:enumeration value="104" />
+          <xs:enumeration value="105" />
+          <xs:enumeration value="106" />
+          <xs:enumeration value="107" />
+          <xs:enumeration value="108" />
+          <xs:enumeration value="109" />
+          <xs:enumeration value="110" />
+          <xs:enumeration value="111" />
+          <xs:enumeration value="112" />
+          <xs:enumeration value="113" />
+          <xs:enumeration value="114" />
+          <xs:enumeration value="115" />
+          <xs:enumeration value="116" />
+          <xs:enumeration value="117" />
+          <xs:enumeration value="118" />
+          <xs:enumeration value="119" />
+          <xs:enumeration value="201" />
+          <xs:enumeration value="202" />
+          <xs:enumeration value="203" />
+          <xs:enumeration value="204" />
+          <xs:enumeration value="205" />
+          <xs:enumeration value="206" />
+          <xs:enumeration value="207" />
+          <xs:enumeration value="301" />
+          <xs:enumeration value="302" />
+          <xs:enumeration value="303" />
+          <xs:enumeration value="304" />
+          <xs:enumeration value="305" />
+          <xs:enumeration value="306" />
+          <xs:enumeration value="307" />
+          <xs:enumeration value="315" />
+          <xs:enumeration value="401" />
+          <xs:enumeration value="402" />
+          <xs:enumeration value="403" />
+          <xs:enumeration value="404" />
+          <xs:enumeration value="405" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="BusinessLineDetailsType">
+    <xs:sequence>
+      <xs:element ref="fea:BusinessLine" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="BusinessReferenceModelType">
+    <xs:sequence>
+      <xs:element ref="fea:BusinessAreaDetails" />
+    </xs:sequence>
+    <xs:attribute name="businessReferenceModelVersion" />
+  </xs:complexType>
+  <xs:complexType name="ComponentType">
+    <xs:sequence>
+      <xs:element ref="fea:ComponentName" />
+      <xs:element ref="fea:ComponentDefinitionText" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute name="refserviceDomainID" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:NMTOKEN">
+          <xs:enumeration value="70" />
+          <xs:enumeration value="71" />
+          <xs:enumeration value="72" />
+          <xs:enumeration value="73" />
+          <xs:enumeration value="74" />
+          <xs:enumeration value="75" />
+          <xs:enumeration value="76" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="refserviceTypeID" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:NMTOKEN">
+          <xs:enumeration value="701" />
+          <xs:enumeration value="702" />
+          <xs:enumeration value="703" />
+          <xs:enumeration value="711" />
+          <xs:enumeration value="712" />
+          <xs:enumeration value="721" />
+          <xs:enumeration value="722" />
+          <xs:enumeration value="723" />
+          <xs:enumeration value="724" />
+          <xs:enumeration value="731" />
+          <xs:enumeration value="732" />
+          <xs:enumeration value="733" />
+          <xs:enumeration value="734" />
+          <xs:enumeration value="741" />
+          <xs:enumeration value="742" />
+          <xs:enumeration value="743" />
+          <xs:enumeration value="744" />
+          <xs:enumeration value="745" />
+          <xs:enumeration value="751" />
+          <xs:enumeration value="752" />
+          <xs:enumeration value="753" />
+          <xs:enumeration value="754" />
+          <xs:enumeration value="755" />
+          <xs:enumeration value="756" />
+          <xs:enumeration value="761" />
+          <xs:enumeration value="762" />
+          <xs:enumeration value="763" />
+          <xs:enumeration value="764" />
+          <xs:enumeration value="765" />
+          <xs:enumeration value="766" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="componentID" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:NMTOKEN">
+          <xs:enumeration value="500" />
+          <xs:enumeration value="501" />
+          <xs:enumeration value="510" />
+          <xs:enumeration value="511" />
+          <xs:enumeration value="512" />
+          <xs:enumeration value="513" />
+          <xs:enumeration value="514" />
+          <xs:enumeration value="515" />
+          <xs:enumeration value="516" />
+          <xs:enumeration value="517" />
+          <xs:enumeration value="518" />
+          <xs:enumeration value="519" />
+          <xs:enumeration value="520" />
+          <xs:enumeration value="521" />
+          <xs:enumeration value="522" />
+          <xs:enumeration value="523" />
+          <xs:enumeration value="524" />
+          <xs:enumeration value="525" />
+          <xs:enumeration value="526" />
+          <xs:enumeration value="527" />
+          <xs:enumeration value="528" />
+          <xs:enumeration value="529" />
+          <xs:enumeration value="530" />
+          <xs:enumeration value="531" />
+          <xs:enumeration value="532" />
+          <xs:enumeration value="533" />
+          <xs:enumeration value="534" />
+          <xs:enumeration value="535" />
+          <xs:enumeration value="536" />
+          <xs:enumeration value="537" />
+          <xs:enumeration value="538" />
+          <xs:enumeration value="539" />
+          <xs:enumeration value="540" />
+          <xs:enumeration value="541" />
+          <xs:enumeration value="542" />
+          <xs:enumeration value="543" />
+          <xs:enumeration value="544" />
+          <xs:enumeration value="545" />
+          <xs:enumeration value="546" />
+          <xs:enumeration value="547" />
+          <xs:enumeration value="548" />
+          <xs:enumeration value="549" />
+          <xs:enumeration value="550" />
+          <xs:enumeration value="551" />
+          <xs:enumeration value="552" />
+          <xs:enumeration value="553" />
+          <xs:enumeration value="554" />
+          <xs:enumeration value="555" />
+          <xs:enumeration value="556" />
+          <xs:enumeration value="557" />
+          <xs:enumeration value="558" />
+          <xs:enumeration value="559" />
+          <xs:enumeration value="560" />
+          <xs:enumeration value="561" />
+          <xs:enumeration value="562" />
+          <xs:enumeration value="563" />
+          <xs:enumeration value="564" />
+          <xs:enumeration value="565" />
+          <xs:enumeration value="566" />
+          <xs:enumeration value="567" />
+          <xs:enumeration value="568" />
+          <xs:enumeration value="569" />
+          <xs:enumeration value="570" />
+          <xs:enumeration value="571" />
+          <xs:enumeration value="572" />
+          <xs:enumeration value="573" />
+          <xs:enumeration value="574" />
+          <xs:enumeration value="575" />
+          <xs:enumeration value="576" />
+          <xs:enumeration value="577" />
+          <xs:enumeration value="578" />
+          <xs:enumeration value="579" />
+          <xs:enumeration value="580" />
+          <xs:enumeration value="581" />
+          <xs:enumeration value="582" />
+          <xs:enumeration value="583" />
+          <xs:enumeration value="584" />
+          <xs:enumeration value="585" />
+          <xs:enumeration value="586" />
+          <xs:enumeration value="587" />
+          <xs:enumeration value="588" />
+          <xs:enumeration value="589" />
+          <xs:enumeration value="590" />
+          <xs:enumeration value="591" />
+          <xs:enumeration value="592" />
+          <xs:enumeration value="593" />
+          <xs:enumeration value="594" />
+          <xs:enumeration value="595" />
+          <xs:enumeration value="596" />
+          <xs:enumeration value="597" />
+          <xs:enumeration value="598" />
+          <xs:enumeration value="599" />
+          <xs:enumeration value="600" />
+          <xs:enumeration value="601" />
+          <xs:enumeration value="602" />
+          <xs:enumeration value="603" />
+          <xs:enumeration value="604" />
+          <xs:enumeration value="605" />
+          <xs:enumeration value="606" />
+          <xs:enumeration value="607" />
+          <xs:enumeration value="608" />
+          <xs:enumeration value="609" />
+          <xs:enumeration value="610" />
+          <xs:enumeration value="611" />
+          <xs:enumeration value="612" />
+          <xs:enumeration value="613" />
+          <xs:enumeration value="614" />
+          <xs:enumeration value="615" />
+          <xs:enumeration value="616" />
+          <xs:enumeration value="617" />
+          <xs:enumeration value="618" />
+          <xs:enumeration value="619" />
+          <xs:enumeration value="620" />
+          <xs:enumeration value="621" />
+          <xs:enumeration value="622" />
+          <xs:enumeration value="623" />
+          <xs:enumeration value="624" />
+          <xs:enumeration value="625" />
+          <xs:enumeration value="626" />
+          <xs:enumeration value="627" />
+          <xs:enumeration value="628" />
+          <xs:enumeration value="629" />
+          <xs:enumeration value="630" />
+          <xs:enumeration value="631" />
+          <xs:enumeration value="632" />
+          <xs:enumeration value="633" />
+          <xs:enumeration value="634" />
+          <xs:enumeration value="635" />
+          <xs:enumeration value="636" />
+          <xs:enumeration value="637" />
+          <xs:enumeration value="638" />
+          <xs:enumeration value="639" />
+          <xs:enumeration value="640" />
+          <xs:enumeration value="641" />
+          <xs:enumeration value="642" />
+          <xs:enumeration value="643" />
+          <xs:enumeration value="644" />
+          <xs:enumeration value="645" />
+          <xs:enumeration value="646" />
+          <xs:enumeration value="647" />
+          <xs:enumeration value="648" />
+          <xs:enumeration value="649" />
+          <xs:enumeration value="650" />
+          <xs:enumeration value="651" />
+          <xs:enumeration value="652" />
+          <xs:enumeration value="653" />
+          <xs:enumeration value="654" />
+          <xs:enumeration value="655" />
+          <xs:enumeration value="656" />
+          <xs:enumeration value="657" />
+          <xs:enumeration value="658" />
+          <xs:enumeration value="659" />
+          <xs:enumeration value="660" />
+          <xs:enumeration value="661" />
+          <xs:enumeration value="662" />
+          <xs:enumeration value="663" />
+          <xs:enumeration value="664" />
+          <xs:enumeration value="665" />
+          <xs:enumeration value="666" />
+          <xs:enumeration value="667" />
+          <xs:enumeration value="668" />
+          <xs:enumeration value="669" />
+          <xs:enumeration value="670" />
+          <xs:enumeration value="671" />
+          <xs:enumeration value="672" />
+          <xs:enumeration value="673" />
+          <xs:enumeration value="674" />
+          <xs:enumeration value="675" />
+          <xs:enumeration value="676" />
+          <xs:enumeration value="677" />
+          <xs:enumeration value="678" />
+          <xs:enumeration value="679" />
+          <xs:enumeration value="680" />
+          <xs:enumeration value="681" />
+          <xs:enumeration value="682" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="ComponentDetailsType">
+    <xs:sequence>
+      <xs:element ref="fea:Component" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ServiceAreaType">
+    <xs:sequence>
+      <xs:element ref="fea:ServiceAreaName" />
+      <xs:element ref="fea:ServiceAreaDefinitionText" minOccurs="0" />
+      <xs:element ref="fea:ServiceCategoryDetails" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ServiceAreaDetailsType">
+    <xs:sequence>
+      <xs:element ref="fea:ServiceArea" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ServiceCategoryType">
+    <xs:sequence>
+      <xs:element ref="fea:ServiceCategoryName" />
+      <xs:element ref="fea:ServiceCategoryDefinitionText" minOccurs="0" />
+      <xs:element ref="fea:ServiceStandardDetails" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ServiceCategoryDetailsType">
+    <xs:sequence>
+      <xs:element ref="fea:ServiceCategory" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ServiceComponentReferenceModelType">
+    <xs:sequence>
+      <xs:element ref="fea:ServiceDomainDetails" />
+    </xs:sequence>
+    <xs:attribute name="serviceComponentReferenceModelVersion" />
+  </xs:complexType>
+  <xs:complexType name="ServiceDomainType">
+    <xs:sequence>
+      <xs:element ref="fea:ServiceDomainName" />
+      <xs:element ref="fea:ServiceDomainDefinitionText" minOccurs="0" />
+      <xs:element ref="fea:ServiceTypeDetails" />
+    </xs:sequence>
+    <xs:attribute name="serviceDomainID" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:NMTOKEN">
+          <xs:enumeration value="70" />
+          <xs:enumeration value="71" />
+          <xs:enumeration value="72" />
+          <xs:enumeration value="73" />
+          <xs:enumeration value="74" />
+          <xs:enumeration value="75" />
+          <xs:enumeration value="76" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="ServiceDomainDetailsType">
+    <xs:sequence>
+      <xs:element ref="fea:ServiceDomain" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ServiceStandardDetailsType">
+    <xs:sequence>
+      <xs:element ref="fea:ServiceStandard" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ServiceStandardType">
+    <xs:sequence>
+      <xs:element ref="fea:ServiceStandardName" />
+      <xs:element ref="fea:ServiceStandardDefinitionText" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute name="ServiceStandardID" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:NMTOKEN">
+          <xs:enumeration value="850" />
+          <xs:enumeration value="851" />
+          <xs:enumeration value="852" />
+          <xs:enumeration value="853" />
+          <xs:enumeration value="854" />
+          <xs:enumeration value="855" />
+          <xs:enumeration value="856" />
+          <xs:enumeration value="857" />
+          <xs:enumeration value="858" />
+          <xs:enumeration value="859" />
+          <xs:enumeration value="860" />
+          <xs:enumeration value="861" />
+          <xs:enumeration value="862" />
+          <xs:enumeration value="863" />
+          <xs:enumeration value="864" />
+          <xs:enumeration value="865" />
+          <xs:enumeration value="866" />
+          <xs:enumeration value="867" />
+          <xs:enumeration value="868" />
+          <xs:enumeration value="869" />
+          <xs:enumeration value="870" />
+          <xs:enumeration value="871" />
+          <xs:enumeration value="872" />
+          <xs:enumeration value="873" />
+          <xs:enumeration value="874" />
+          <xs:enumeration value="875" />
+          <xs:enumeration value="876" />
+          <xs:enumeration value="877" />
+          <xs:enumeration value="878" />
+          <xs:enumeration value="879" />
+          <xs:enumeration value="880" />
+          <xs:enumeration value="881" />
+          <xs:enumeration value="882" />
+          <xs:enumeration value="883" />
+          <xs:enumeration value="884" />
+          <xs:enumeration value="885" />
+          <xs:enumeration value="886" />
+          <xs:enumeration value="887" />
+          <xs:enumeration value="888" />
+          <xs:enumeration value="889" />
+          <xs:enumeration value="890" />
+          <xs:enumeration value="891" />
+          <xs:enumeration value="892" />
+          <xs:enumeration value="893" />
+          <xs:enumeration value="894" />
+          <xs:enumeration value="895" />
+          <xs:enumeration value="896" />
+          <xs:enumeration value="897" />
+          <xs:enumeration value="898" />
+          <xs:enumeration value="899" />
+          <xs:enumeration value="900" />
+          <xs:enumeration value="901" />
+       </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="ServiceTypeType">
+    <xs:sequence>
+      <xs:element ref="fea:ServiceTypeName" />
+      <xs:element ref="fea:ServiceTypeDefinitionText" minOccurs="0" />
+      <xs:element ref="fea:ComponentDetails" />
+    </xs:sequence>
+    <xs:attribute name="refserviceDomainID" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:NMTOKEN">
+          <xs:enumeration value="70" />
+          <xs:enumeration value="71" />
+          <xs:enumeration value="72" />
+          <xs:enumeration value="73" />
+          <xs:enumeration value="74" />
+          <xs:enumeration value="75" />
+          <xs:enumeration value="76" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="serviceTypeID" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:NMTOKEN">
+          <xs:enumeration value="701" />
+          <xs:enumeration value="702" />
+          <xs:enumeration value="703" />
+          <xs:enumeration value="711" />
+          <xs:enumeration value="712" />
+          <xs:enumeration value="721" />
+          <xs:enumeration value="722" />
+          <xs:enumeration value="723" />
+          <xs:enumeration value="724" />
+          <xs:enumeration value="731" />
+          <xs:enumeration value="732" />
+          <xs:enumeration value="733" />
+          <xs:enumeration value="734" />
+          <xs:enumeration value="741" />
+          <xs:enumeration value="742" />
+          <xs:enumeration value="743" />
+          <xs:enumeration value="744" />
+          <xs:enumeration value="745" />
+          <xs:enumeration value="751" />
+          <xs:enumeration value="752" />
+          <xs:enumeration value="753" />
+          <xs:enumeration value="754" />
+          <xs:enumeration value="755" />
+          <xs:enumeration value="756" />
+          <xs:enumeration value="761" />
+          <xs:enumeration value="762" />
+          <xs:enumeration value="763" />
+          <xs:enumeration value="764" />
+          <xs:enumeration value="765" />
+          <xs:enumeration value="766" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="ServiceTypeDetailsType">
+    <xs:sequence>
+      <xs:element ref="fea:ServiceType" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SubFunctionType">
+    <xs:sequence>
+      <xs:element ref="fea:SubFunctionName" />
+      <xs:element ref="fea:SubFunctionDefinitionText" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute name="refbusinessAreaID">
+      <xs:simpleType>
+        <xs:restriction base="xs:NMTOKEN">
+          <xs:enumeration value="1" />
+          <xs:enumeration value="2" />
+          <xs:enumeration value="3" />
+          <xs:enumeration value="4" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="refbusinessLineID">
+      <xs:simpleType>
+        <xs:restriction base="xs:NMTOKEN">
+          <xs:enumeration value="101" />
+          <xs:enumeration value="102" />
+          <xs:enumeration value="103" />
+          <xs:enumeration value="104" />
+          <xs:enumeration value="105" />
+          <xs:enumeration value="106" />
+          <xs:enumeration value="107" />
+          <xs:enumeration value="108" />
+          <xs:enumeration value="109" />
+          <xs:enumeration value="110" />
+          <xs:enumeration value="111" />
+          <xs:enumeration value="112" />
+          <xs:enumeration value="113" />
+          <xs:enumeration value="114" />
+          <xs:enumeration value="115" />
+          <xs:enumeration value="116" />
+          <xs:enumeration value="117" />
+          <xs:enumeration value="118" />
+          <xs:enumeration value="119" />
+          <xs:enumeration value="201" />
+          <xs:enumeration value="202" />
+          <xs:enumeration value="203" />
+          <xs:enumeration value="204" />
+          <xs:enumeration value="205" />
+          <xs:enumeration value="206" />
+          <xs:enumeration value="207" />
+          <xs:enumeration value="301" />
+          <xs:enumeration value="302" />
+          <xs:enumeration value="303" />
+          <xs:enumeration value="304" />
+          <xs:enumeration value="305" />
+          <xs:enumeration value="306" />
+          <xs:enumeration value="307" />
+          <xs:enumeration value="315" />
+          <xs:enumeration value="401" />
+          <xs:enumeration value="402" />
+          <xs:enumeration value="403" />
+          <xs:enumeration value="404" />
+          <xs:enumeration value="405" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="subFunctionID">
+      <xs:simpleType>
+        <xs:restriction base="xs:NMTOKEN">
+          <xs:enumeration value="001" />
+          <xs:enumeration value="010" />
+          <xs:enumeration value="101" />
+          <xs:enumeration value="102" />
+          <xs:enumeration value="103" />
+          <xs:enumeration value="104" />
+          <xs:enumeration value="105" />
+          <xs:enumeration value="106" />
+          <xs:enumeration value="107" />
+          <xs:enumeration value="108" />
+          <xs:enumeration value="109" />
+          <xs:enumeration value="011" />
+          <xs:enumeration value="110" />
+          <xs:enumeration value="111" />
+          <xs:enumeration value="112" />
+          <xs:enumeration value="113" />
+          <xs:enumeration value="114" />
+          <xs:enumeration value="115" />
+          <xs:enumeration value="116" />
+          <xs:enumeration value="117" />
+          <xs:enumeration value="118" />
+          <xs:enumeration value="119" />
+          <xs:enumeration value="012" />
+          <xs:enumeration value="120" />
+          <xs:enumeration value="121" />
+          <xs:enumeration value="122" />
+          <xs:enumeration value="123" />
+          <xs:enumeration value="124" />
+          <xs:enumeration value="125" />
+          <xs:enumeration value="126" />
+          <xs:enumeration value="127" />
+          <xs:enumeration value="128" />
+          <xs:enumeration value="129" />
+          <xs:enumeration value="013" />
+          <xs:enumeration value="136" />
+          <xs:enumeration value="137" />
+          <xs:enumeration value="138" />
+          <xs:enumeration value="139" />
+          <xs:enumeration value="014" />
+          <xs:enumeration value="140" />
+          <xs:enumeration value="141" />
+          <xs:enumeration value="142" />
+          <xs:enumeration value="143" />
+          <xs:enumeration value="144" />
+          <xs:enumeration value="145" />
+          <xs:enumeration value="146" />
+          <xs:enumeration value="015" />
+          <xs:enumeration value="016" />
+          <xs:enumeration value="017" />
+          <xs:enumeration value="175" />
+          <xs:enumeration value="176" />
+          <xs:enumeration value="177" />
+          <xs:enumeration value="178" />
+          <xs:enumeration value="179" />
+          <xs:enumeration value="018" />
+          <xs:enumeration value="180" />
+          <xs:enumeration value="181" />
+          <xs:enumeration value="019" />
+          <xs:enumeration value="002" />
+          <xs:enumeration value="020" />
+          <xs:enumeration value="021" />
+          <xs:enumeration value="210" />
+          <xs:enumeration value="211" />
+          <xs:enumeration value="212" />
+          <xs:enumeration value="213" />
+          <xs:enumeration value="214" />
+          <xs:enumeration value="215" />
+          <xs:enumeration value="216" />
+          <xs:enumeration value="022" />
+          <xs:enumeration value="023" />
+          <xs:enumeration value="024" />
+          <xs:enumeration value="025" />
+          <xs:enumeration value="026" />
+          <xs:enumeration value="027" />
+          <xs:enumeration value="003" />
+          <xs:enumeration value="033" />
+          <xs:enumeration value="034" />
+          <xs:enumeration value="035" />
+          <xs:enumeration value="036" />
+          <xs:enumeration value="037" />
+          <xs:enumeration value="038" />
+          <xs:enumeration value="039" />
+          <xs:enumeration value="004" />
+          <xs:enumeration value="040" />
+          <xs:enumeration value="041" />
+          <xs:enumeration value="042" />
+          <xs:enumeration value="043" />
+          <xs:enumeration value="044" />
+          <xs:enumeration value="045" />
+          <xs:enumeration value="046" />
+          <xs:enumeration value="047" />
+          <xs:enumeration value="048" />
+          <xs:enumeration value="049" />
+          <xs:enumeration value="005" />
+          <xs:enumeration value="050" />
+          <xs:enumeration value="051" />
+          <xs:enumeration value="052" />
+          <xs:enumeration value="053" />
+          <xs:enumeration value="054" />
+          <xs:enumeration value="055" />
+          <xs:enumeration value="056" />
+          <xs:enumeration value="057" />
+          <xs:enumeration value="058" />
+          <xs:enumeration value="059" />
+          <xs:enumeration value="006" />
+          <xs:enumeration value="060" />
+          <xs:enumeration value="061" />
+          <xs:enumeration value="062" />
+          <xs:enumeration value="063" />
+          <xs:enumeration value="064" />
+          <xs:enumeration value="065" />
+          <xs:enumeration value="066" />
+          <xs:enumeration value="007" />
+          <xs:enumeration value="008" />
+          <xs:enumeration value="009" />
+          <xs:enumeration value="091" />
+          <xs:enumeration value="092" />
+          <xs:enumeration value="093" />
+          <xs:enumeration value="094" />
+          <xs:enumeration value="095" />
+          <xs:enumeration value="096" />
+          <xs:enumeration value="097" />
+          <xs:enumeration value="098" />
+          <xs:enumeration value="099" />
+          <xs:enumeration value="067" />
+          <xs:enumeration value="068" />
+          <xs:enumeration value="069" />
+          <xs:enumeration value="070" />
+          <xs:enumeration value="071" />
+          <xs:enumeration value="072" />
+          <xs:enumeration value="073" />
+          <xs:enumeration value="074" />
+          <xs:enumeration value="075" />
+          <xs:enumeration value="076" />
+          <xs:enumeration value="077" />
+          <xs:enumeration value="078" />
+          <xs:enumeration value="079" />
+          <xs:enumeration value="080" />
+          <xs:enumeration value="081" />
+          <xs:enumeration value="082" />
+          <xs:enumeration value="083" />
+          <xs:enumeration value="084" />
+          <xs:enumeration value="085" />
+          <xs:enumeration value="086" />
+          <xs:enumeration value="087" />
+          <xs:enumeration value="088" />
+          <xs:enumeration value="089" />
+          <xs:enumeration value="090" />
+          <xs:enumeration value="100" />
+          <xs:enumeration value="217" />
+          <xs:enumeration value="246" />
+          <xs:enumeration value="247" />
+          <xs:enumeration value="248" />
+          <xs:enumeration value="249" />
+          <xs:enumeration value="250" />
+          <xs:enumeration value="251" />
+          <xs:enumeration value="252" />
+          <xs:enumeration value="253" />
+          <xs:enumeration value="254" />
+          <xs:enumeration value="255" />
+          <xs:enumeration value="256" />
+          <xs:enumeration value="228" />
+          <xs:enumeration value="257" />
+          <xs:enumeration value="258" />
+          <xs:enumeration value="259" />
+          <xs:enumeration value="260" />
+          <xs:enumeration value="261" />
+          <xs:enumeration value="262" />
+          <xs:enumeration value="263" />
+          <xs:enumeration value="264" />
+          <xs:enumeration value="999" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="SubFunctionDetailsType">
+    <xs:sequence>
+      <xs:element ref="fea:SubFunction" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TechnicalReferenceModelType">
+    <xs:sequence>
+      <xs:element ref="fea:ServiceAreaDetails" />
+    </xs:sequence>
+    <xs:attribute name="technicalReferenceModelVersion" />
+  </xs:complexType>
+  <xs:element name="BusinessArea" type="fea:BusinessAreaType" />
+  <xs:element name="BusinessAreaDefinitionText" type="xs:string" />
+  <xs:element name="BusinessAreaDetails" type="fea:BusinessAreaDetailsType" />
+  <xs:element name="BusinessAreaName">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="Services for Citizens" />
+        <xs:enumeration value="Management of Government Resources" />
+        <xs:enumeration value="Support Delivery of Services" />
+        <xs:enumeration value="Mode of Delivery" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="BusinessLine" type="fea:BusinessLineType" />
+  <xs:element name="BusinessLineDefinitionText" type="xs:string" />
+  <xs:element name="BusinessLineDetails" type="fea:BusinessLineDetailsType" />
+  <xs:element name="BusinessLineName">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="Administrative Management" />
+        <xs:enumeration value="Community and Social Services" />
+        <xs:enumeration value="Controls and Oversight" />
+        <xs:enumeration value="Correctional Activities" />
+        <xs:enumeration value="Defense and National Security" />
+        <xs:enumeration value="Disaster Management" />
+        <xs:enumeration value="Economic Development" />
+        <xs:enumeration value="Education" />
+        <xs:enumeration value="Energy" />
+        <xs:enumeration value="Environmental Management" />
+        <xs:enumeration value="Financial Management" />
+        <xs:enumeration value="General Government" />
+        <xs:enumeration value="General Science and Innovation" />
+        <xs:enumeration value="Health" />
+        <xs:enumeration value="Homeland Security" />
+        <xs:enumeration value="Human Resource Management" />
+        <xs:enumeration value="Income Security" />
+        <xs:enumeration value="Information and Technology Management" />
+        <xs:enumeration value="Intelligence Operations" />
+        <xs:enumeration value="Internal Risk Management and Mitigation" />
+        <xs:enumeration value="International Affairs and Commerce" />
+        <xs:enumeration value="Law Enforcement" />
+        <xs:enumeration value="Legislative Relations" />
+        <xs:enumeration value="Litigation and Judicial Activities" />
+        <xs:enumeration value="Natural Resources" />
+        <xs:enumeration value="None" />
+        <xs:enumeration value="Planning and Budgeting" />
+        <xs:enumeration value="Public Affairs" />
+        <xs:enumeration value="Regulatory Development" />
+        <xs:enumeration value="Revenue Collection" />
+        <xs:enumeration value="Supply Chain Management" />
+        <xs:enumeration value="Transportation" />
+        <xs:enumeration value="Workforce Management" />
+        <xs:enumeration value="Credit and Insurance" />
+        <xs:enumeration value="Direct Services for Citizens" />
+        <xs:enumeration value="Federal Financial Assistance" />
+        <xs:enumeration value="Knowledge Creation and Management" />
+        <xs:enumeration value="Public Goods Creation and Management" />
+        <xs:enumeration value="Regulatory Compliance and Enforcement" />
+        <xs:enumeration value="Transfers to States and Local Governments" />
+        <xs:enumeration value="" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="BusinessReferenceModel" type="fea:BusinessReferenceModelType" />
+  <xs:element name="Component" type="fea:ComponentType" />
+  <xs:element name="ComponentDefinitionText" type="xs:string" />
+  <xs:element name="ComponentDetails" type="fea:ComponentDetailsType" />
+  <xs:element name="ComponentName">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="Access Control" />
+        <xs:enumeration value="Activity-Based Management" />
+        <xs:enumeration value="Ad-Hoc" />
+        <xs:enumeration value="Alerts and Notifications" />
+        <xs:enumeration value="All" />
+        <xs:enumeration value="Asset Cataloging / Identification" />
+        <xs:enumeration value="Asset Transfer, Allocation, and Maintenance" />
+        <xs:enumeration value="Assistance Request" />
+        <xs:enumeration value="Audio Conferencing" />
+        <xs:enumeration value="Audit Trail Capture and Analysis" />
+        <xs:enumeration value="Auditing" />
+        <xs:enumeration value="Awards Management" />
+        <xs:enumeration value="Balanced Scorecard" />
+        <xs:enumeration value="Benefit Management" />
+        <xs:enumeration value="Billing and Accounting" />
+        <xs:enumeration value="Brand Management" />
+        <xs:enumeration value="Business Rule Management" />
+        <xs:enumeration value="CAD" />
+        <xs:enumeration value="Call Center Management" />
+        <xs:enumeration value="Career Development and Retention" />
+        <xs:enumeration value="Case Management" />
+        <xs:enumeration value="Catalog Management" />
+        <xs:enumeration value="Categorization" />
+        <xs:enumeration value="Certification and Accreditation" />
+        <xs:enumeration value="Change Management" />
+        <xs:enumeration value="Classification" />
+        <xs:enumeration value="Classification" />
+        <xs:enumeration value="Community Management" />
+        <xs:enumeration value="Computer / Telephony Integration" />
+        <xs:enumeration value="Computers / Automation Management" />
+        <xs:enumeration value="Configuration Management" />
+        <xs:enumeration value="Conflict Resolution" />
+        <xs:enumeration value="Contact and Profile Management" />
+        <xs:enumeration value="Content Authoring" />
+        <xs:enumeration value="Content Publishing and Delivery" />
+        <xs:enumeration value="Content Review and Approval" />
+        <xs:enumeration value="Contingent Workforce Management" />
+        <xs:enumeration value="Credit / Charge" />
+        <xs:enumeration value="Cryptography" />
+        <xs:enumeration value="Currency Translation" />
+        <xs:enumeration value="Customer / Account Management" />
+        <xs:enumeration value="Customer Analytics" />
+        <xs:enumeration value="Customer Feedback" />
+        <xs:enumeration value="Data Classification" />
+        <xs:enumeration value="Data Cleansing" />
+        <xs:enumeration value="Data Exchange" />
+        <xs:enumeration value="Data Integration" />
+        <xs:enumeration value="Data Mart" />
+        <xs:enumeration value="Data Mining" />
+        <xs:enumeration value="Data Recovery" />
+        <xs:enumeration value="Data Warehouse" />
+        <xs:enumeration value="Debt Collection" />
+        <xs:enumeration value="Decision Support and Planning" />
+        <xs:enumeration value="Demand Forecasting / Mgmt" />
+        <xs:enumeration value="Digital Rights Management" />
+        <xs:enumeration value="Digital Signature Management" />
+        <xs:enumeration value="Document Classification" />
+        <xs:enumeration value="Document Conversion" />
+        <xs:enumeration value="Document Imaging and OCR" />
+        <xs:enumeration value="Document Library" />
+        <xs:enumeration value="Document Referencing" />
+        <xs:enumeration value="Document Retirement" />
+        <xs:enumeration value="Document Review and Approval" />
+        <xs:enumeration value="Document Revisions" />
+        <xs:enumeration value="Education / Training" />
+        <xs:enumeration value="Email" />
+        <xs:enumeration value="Encryption" />
+        <xs:enumeration value="Enterprise Application Integration" />
+        <xs:enumeration value="Event / News Management" />
+        <xs:enumeration value="Expense Management" />
+        <xs:enumeration value="Extraction and Transformation" />
+        <xs:enumeration value="Facilities Management" />
+        <xs:enumeration value="Financial Reporting" />
+        <xs:enumeration value="FISMA Management and Reporting" />
+        <xs:enumeration value="Forensics" />
+        <xs:enumeration value="Forms Creation" />
+        <xs:enumeration value="Forms Modification" />
+        <xs:enumeration value="Governance / Policy Management" />
+        <xs:enumeration value="Graphing / Charting" />
+        <xs:enumeration value="Health and Safety" />
+        <xs:enumeration value="Identification and Authentication" />
+        <xs:enumeration value="Imagery" />
+        <xs:enumeration value="Inbound Correspondence Management" />
+        <xs:enumeration value="Incident Response" />
+        <xs:enumeration value="Indexing" />
+        <xs:enumeration value="Information Mapping / Taxonomy" />
+        <xs:enumeration value="Information Retrieval" />
+        <xs:enumeration value="Information Sharing" />
+        <xs:enumeration value="Instant Messaging" />
+        <xs:enumeration value="Instrumentation and Testing" />
+        <xs:enumeration value="Internal Controls" />
+        <xs:enumeration value="Intrusion Detection" />
+        <xs:enumeration value="Intrusion Prevention" />
+        <xs:enumeration value="Inventory Management" />
+        <xs:enumeration value="Invoice / Requisition Tracking and Approval" />
+        <xs:enumeration value="Issue Tracking" />
+        <xs:enumeration value="Knowledge Capture" />
+        <xs:enumeration value="Knowledge Discovery" />
+        <xs:enumeration value="Knowledge Distribution and Delivery" />
+        <xs:enumeration value="Knowledge Engineering" />
+        <xs:enumeration value="Legacy Integration" />
+        <xs:enumeration value="Library / Storage" />
+        <xs:enumeration value="License Management" />
+        <xs:enumeration value="Loading and Archiving" />
+        <xs:enumeration value="Logistics and Transportation" />
+        <xs:enumeration value="Mapping / Geospatial / Elevation / GPS" />
+        <xs:enumeration value="Mathematical" />
+        <xs:enumeration value="Meta Data Management" />
+        <xs:enumeration value="Modeling" />
+        <xs:enumeration value="More Than One" />
+        <xs:enumeration value="Multi-Lingual Support" />
+        <xs:enumeration value="Multimedia" />
+        <xs:enumeration value="Network Management" />
+        <xs:enumeration value="OLAP" />
+        <xs:enumeration value="Online Help" />
+        <xs:enumeration value="Online Tutorials" />
+        <xs:enumeration value="Ordering / Purchasing" />
+        <xs:enumeration value="Outbound Correspondence Management" />
+        <xs:enumeration value="Partner Relationship Management" />
+        <xs:enumeration value="Pattern Matching" />
+        <xs:enumeration value="Payment / Settlement" />
+        <xs:enumeration value="Payroll" />
+        <xs:enumeration value="Performance Management" />
+        <xs:enumeration value="Personalization" />
+        <xs:enumeration value="Personnel Administration" />
+        <xs:enumeration value="Portfolio Management" />
+        <xs:enumeration value="Precision / Recall Ranking" />
+        <xs:enumeration value="Predictive" />
+        <xs:enumeration value="Process Tracking" />
+        <xs:enumeration value="Procurement" />
+        <xs:enumeration value="Product Management" />
+        <xs:enumeration value="Program / Project Management" />
+        <xs:enumeration value="Property / Asset Management" />
+        <xs:enumeration value="Quality Management" />
+        <xs:enumeration value="Query" />
+        <xs:enumeration value="Radiological" />
+        <xs:enumeration value="Real-Time / Chat" />
+        <xs:enumeration value="Record Linking / Association" />
+        <xs:enumeration value="Recruiting" />
+        <xs:enumeration value="Remote Systems Control" />
+        <xs:enumeration value="Requirements Management" />
+        <xs:enumeration value="Reservations / Registration" />
+        <xs:enumeration value="Resource Planning and Allocation" />
+        <xs:enumeration value="Resume Management" />
+        <xs:enumeration value="Retirement Management" />
+        <xs:enumeration value="Returns Management" />
+        <xs:enumeration value="Revenue Management" />
+        <xs:enumeration value="Risk Management" />
+        <xs:enumeration value="Sales and Marketing" />
+        <xs:enumeration value="Scheduling" />
+        <xs:enumeration value="Self-Service" />
+        <xs:enumeration value="Shared Calendaring" />
+        <xs:enumeration value="Simulation" />
+        <xs:enumeration value="Skills Management" />
+        <xs:enumeration value="Smart Documents" />
+        <xs:enumeration value="Software Development" />
+        <xs:enumeration value="Software Distribution" />
+        <xs:enumeration value="Sourcing Management" />
+        <xs:enumeration value="Standardized / Canned" />
+        <xs:enumeration value="Storefront / Shopping Cart" />
+        <xs:enumeration value="Strategic Planning and Mgmt" />
+        <xs:enumeration value="Structural / Thermal" />
+        <xs:enumeration value="Subscriptions" />
+        <xs:enumeration value="Surveys" />
+        <xs:enumeration value="Syndication Management" />
+        <xs:enumeration value="System Resource Monitoring" />
+        <xs:enumeration value="Tagging and Aggregation" />
+        <xs:enumeration value="Task Management" />
+        <xs:enumeration value="Team / Org Management" />
+        <xs:enumeration value="Threaded Discussions" />
+        <xs:enumeration value="Time Reporting" />
+        <xs:enumeration value="Travel Management" />
+        <xs:enumeration value="Video Conferencing" />
+        <xs:enumeration value="Virus Protection" />
+        <xs:enumeration value="Voice Communications" />
+        <xs:enumeration value="Warehouse Management" />
+        <xs:enumeration value="Workforce Acquisition / Optimization" />
+        <xs:enumeration value="Workforce Directory / Locator" />
+        <xs:enumeration value="Workgroup / Groupware" />
+        <xs:enumeration value="" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="ServiceArea" type="fea:ServiceAreaType" />
+  <xs:element name="ServiceAreaDefinitionText" type="xs:string" />
+  <xs:element name="ServiceAreaDetails" type="fea:ServiceAreaDetailsType" />
+  <xs:element name="ServiceAreaName">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="Component Framework" />
+        <xs:enumeration value="Service Access and Delivery" />
+        <xs:enumeration value="Service Interface and Integration" />
+        <xs:enumeration value="Service Platform and Infrastructure" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="ServiceCategory" type="fea:ServiceCategoryType" />
+  <xs:element name="ServiceCategoryDefinitionText" type="xs:string" />
+  <xs:element name="ServiceCategoryDetails" type="fea:ServiceCategoryDetailsType" />
+  <xs:element name="ServiceCategoryName">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="Access Channels" />
+        <xs:enumeration value="Business Logic" />
+        <xs:enumeration value="Data Interchange" />
+        <xs:enumeration value="Data Management" />
+        <xs:enumeration value="Database / Storage" />
+        <xs:enumeration value="Delivery Channels" />
+        <xs:enumeration value="Delivery Servers" />
+        <xs:enumeration value="Hardware / Infrastructure" />
+        <xs:enumeration value="Integration" />
+        <xs:enumeration value="Interface" />
+        <xs:enumeration value="Interoperability" />
+        <xs:enumeration value="User Presentation / Interface" />
+        <xs:enumeration value="Security" />
+        <xs:enumeration value="Service Requirements" />
+        <xs:enumeration value="Service Transport" />
+        <xs:enumeration value="Software Engineering" />
+        <xs:enumeration value="Support Platforms" />
+        <xs:enumeration value="" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="ServiceComponentReferenceModel" type="fea:ServiceComponentReferenceModelType" />
+  <xs:element name="ServiceDomain" type="fea:ServiceDomainType" />
+  <xs:element name="ServiceDomainDefinitionText" type="xs:string" />
+  <xs:element name="ServiceDomainDetails" type="fea:ServiceDomainDetailsType" />
+  <xs:element name="ServiceDomainName">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="Back Office Services" />
+        <xs:enumeration value="Business Analytical Services" />
+        <xs:enumeration value="Business Management Services" />
+        <xs:enumeration value="Customer Services" />
+        <xs:enumeration value="Digital Asset Services" />
+        <xs:enumeration value="Process Automation Services" />
+        <xs:enumeration value="Support Services" />
+        <xs:enumeration value="" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="SubFunction" type="fea:SubFunctionType" />
+  <xs:element name="SubFunctionDefinitionText" type="xs:string" />
+  <xs:element name="SubFunctionDetails" type="fea:SubFunctionDetailsType" />
+  <xs:element name="SubFunctionName">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="Access to Care" />
+        <xs:enumeration value="Accounting" />
+        <xs:enumeration value="Agricultural Innovation and Services" />
+        <xs:enumeration value="Air Transportation" />
+        <xs:enumeration value="Asset and Liability Management" />
+        <xs:enumeration value="Benefits Management" />
+        <xs:enumeration value="Border and Transportation Security" />
+        <xs:enumeration value="Budget and Performance Integration" />
+        <xs:enumeration value="Budget Execution" />
+        <xs:enumeration value="Budget Formulation" />
+        <xs:enumeration value="Business and Industry Development" />
+        <xs:enumeration value="Capital Planning" />
+        <xs:enumeration value="Catastrophic Defense" />
+        <xs:enumeration value="Central Fiscal Operations" />
+        <xs:enumeration value="Central Personnel Management" />
+        <xs:enumeration value="Central Property Management" />
+        <xs:enumeration value="Central Records and Statistics Management" />
+        <xs:enumeration value="Citizen Protection" />
+        <xs:enumeration value="Collections and Receivables" />
+        <xs:enumeration value="Community and Regional Development" />
+        <xs:enumeration value="Compensation Management" />
+        <xs:enumeration value="Congressional Liaison Operations" />
+        <xs:enumeration value="Conservation, Marine and Land Management" />
+        <xs:enumeration value="Contingency Planning" />
+        <xs:enumeration value="Continuity of Operations" />
+        <xs:enumeration value="Corrective Action" />
+        <xs:enumeration value="Cost Accounting / Performance Measurement" />
+        <xs:enumeration value="Crime Prevention" />
+        <xs:enumeration value="Criminal Apprehension" />
+        <xs:enumeration value="Criminal Incarceration" />
+        <xs:enumeration value="Criminal Investigation and Surveillance" />
+        <xs:enumeration value="Criminal Rehabilitation" />
+        <xs:enumeration value="Cultural and Historic Exhibition" />
+        <xs:enumeration value="Cultural and Historic Preservation" />
+        <xs:enumeration value="Customer Service" />
+        <xs:enumeration value="Debt Collection" />
+        <xs:enumeration value="Disaster Monitoring and Prediction" />
+        <xs:enumeration value="Disaster Preparedness and Planning" />
+        <xs:enumeration value="Disaster Repair and Restore" />
+        <xs:enumeration value="Elementary, Secondary, and Vocational Education" />
+        <xs:enumeration value="Emergency Response" />
+        <xs:enumeration value="Employee Performance Management" />
+        <xs:enumeration value="Employee Relations" />
+        <xs:enumeration value="Energy Conservation and Preparedness" />
+        <xs:enumeration value="Energy Production" />
+        <xs:enumeration value="Energy Resource Management" />
+        <xs:enumeration value="Energy Supply" />
+        <xs:enumeration value="Enterprise Architecture" />
+        <xs:enumeration value="Environmental Monitoring and Forecasting" />
+        <xs:enumeration value="Environmental Remediation" />
+        <xs:enumeration value="Executive Functions" />
+        <xs:enumeration value="Facilities, Fleet and Equipment Management" />
+        <xs:enumeration value="Federal Asset Sales" />
+        <xs:enumeration value="Financial Sector Oversight" />
+        <xs:enumeration value="Food and Nutrition Assistance" />
+        <xs:enumeration value="Foreign Affairs" />
+        <xs:enumeration value="Funds Control" />
+        <xs:enumeration value="General Retirement and Disability" />
+        <xs:enumeration value="Global Trade" />
+        <xs:enumeration value="Goods Acquisition" />
+        <xs:enumeration value="Ground Transportation" />
+        <xs:enumeration value="Health Care Administration" />
+        <xs:enumeration value="Health Care Delivery Services" />
+        <xs:enumeration value="Health Care Research and Practitioner Education" />
+        <xs:enumeration value="Help Desk Services" />
+        <xs:enumeration value="Higher Education" />
+        <xs:enumeration value="Home Ownership Promotion" />
+        <xs:enumeration value="Housing Assistance" />
+        <xs:enumeration value="HR Strategy" />
+        <xs:enumeration value="Human Resources Development" />
+        <xs:enumeration value="Industry Sector Income Stabilization" />
+        <xs:enumeration value="Information Management" />
+        <xs:enumeration value="Intellectual Property Protection" />
+        <xs:enumeration value="Intelligence Analysis and Production" />
+        <xs:enumeration value="Intelligence Collection" />
+        <xs:enumeration value="Intelligence Planning" />
+        <xs:enumeration value="Intelligence Processing" />
+        <xs:enumeration value="Intelligence Dissemination" />
+        <xs:enumeration value="International Development and Humanitarian Aid" />
+        <xs:enumeration value="Inventory Control" />
+        <xs:enumeration value="IT Infrastructure Maintenance" />
+        <xs:enumeration value="Information Sharing" />
+        <xs:enumeration value="Information Security" />
+        <xs:enumeration value="Judicial Hearing" />
+        <xs:enumeration value="Key Asset and Critical Infrastructure Protection" />
+        <xs:enumeration value="Labor Relations" />
+        <xs:enumeration value="Labor Rights Management" />
+        <xs:enumeration value="Leadership Protection" />
+        <xs:enumeration value="Legal Defense" />
+        <xs:enumeration value="Legal Investigation" />
+        <xs:enumeration value="Legal Prosecution and Litigation" />
+        <xs:enumeration value="Legislation Testimony" />
+        <xs:enumeration value="Legislation Tracking" />
+        <xs:enumeration value="Legislative Functions" />
+        <xs:enumeration value="Lifecycle/Change Management" />
+        <xs:enumeration value="Logistics Management" />
+        <xs:enumeration value="Management Improvement"></xs:enumeration>
+        <xs:enumeration value="None" />
+        <xs:enumeration value="Official Information Dissemination" />
+        <xs:enumeration value="Operational Defense" />
+        <xs:enumeration value="Organization and Position Management" />
+        <xs:enumeration value="Payments" />
+        <xs:enumeration value="Policy and Guidance Development" />
+        <xs:enumeration value="Pollution Prevention and Control" />
+        <xs:enumeration value="Population Health Management and Consumer Safety" />
+        <xs:enumeration value="Postal Service" />
+        <xs:enumeration value="Product Outreach" />
+        <xs:enumeration value="Program Evaluation" />
+        <xs:enumeration value="Program Monitoring" />
+        <xs:enumeration value="Property Protection" />
+        <xs:enumeration value="Proposal Development" />
+        <xs:enumeration value="Public Comment Tracking" />
+        <xs:enumeration value="Public Relations" />
+        <xs:enumeration value="Record Retention" />
+        <xs:enumeration value="Recreational Resource Management and Tourism" />
+        <xs:enumeration value="Regulatory Creation" />
+        <xs:enumeration value="Reporting and Information" />
+        <xs:enumeration value="Resolution Facilitation" />
+        <xs:enumeration value="Rule Publication" />
+        <xs:enumeration value="Scientific and Technological Research and Innovation" />
+        <xs:enumeration value="Security Management" />
+        <xs:enumeration value="Separation Management" />
+        <xs:enumeration value="Service Recovery" />
+        <xs:enumeration value="Services Acquisition" />
+        <xs:enumeration value="Social Services" />
+        <xs:enumeration value="Space Exploration and Innovation" />
+        <xs:enumeration value="Space Operations" />
+        <xs:enumeration value="Staff Acquisition" />
+        <xs:enumeration value="Strategic National and Theater Defense" />
+        <xs:enumeration value="Strategic Planning" />
+        <xs:enumeration value="Substance Control" />
+        <xs:enumeration value="Survivor Compensation" />
+        <xs:enumeration value="System Development" />
+        <xs:enumeration value="System and Network Monitoring" />
+        <xs:enumeration value="System Maintenance" />
+        <xs:enumeration value="Tactical Defense" />
+        <xs:enumeration value="Tax and Fiscal Policy" />
+        <xs:enumeration value="Taxation Management" />
+        <xs:enumeration value="Training and Employment" />
+        <xs:enumeration value="Travel" />
+        <xs:enumeration value="Unemployment Compensation" />
+        <xs:enumeration value="User Fee Collection" />
+        <xs:enumeration value="Water Resource Management" />
+        <xs:enumeration value="Water Transportation" />
+        <xs:enumeration value="Worker Safety" />
+        <xs:enumeration value="Workforce Planning" />
+        <xs:enumeration value="Workplace Policy Development and Management" />
+        <xs:enumeration value="Advising and Consulting" />
+        <xs:enumeration value="Civilian Operations" />
+        <xs:enumeration value="Construction" />
+        <xs:enumeration value="Direct Loans" />
+        <xs:enumeration value="Direct Transfers to Individuals" />
+        <xs:enumeration value="Earmarked Grants" />
+        <xs:enumeration value="Federal Grants (Non-State)" />
+        <xs:enumeration value="Formula Grants" />
+        <xs:enumeration value="General Insurance" />
+        <xs:enumeration value="General Purpose Data and Statistics" />
+        <xs:enumeration value="Information Infrastructure Management" />
+        <xs:enumeration value="Inspections and Auditing" />
+        <xs:enumeration value="Knowledge Dissemination" />
+        <xs:enumeration value="Loan Guarantees" />
+        <xs:enumeration value="Manufacturing" />
+        <xs:enumeration value="Military Operations" />
+        <xs:enumeration value="Permits and Licensing" />
+        <xs:enumeration value="Project/Competitive Grants" />
+        <xs:enumeration value="Public Resources, Facilities, and Infrastructure Management" />
+        <xs:enumeration value="Research and Development" />
+        <xs:enumeration value="Standard Setting/Reporting Guideline Development" />
+        <xs:enumeration value="State Loans" />
+        <xs:enumeration value="Subsidies" />
+        <xs:enumeration value="Tax Credits" />
+        <xs:enumeration value="" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="ServiceStandard" type="fea:ServiceStandardType" />
+  <xs:element name="ServiceStandardDefinitionText" type="xs:string" />
+  <xs:element name="ServiceStandardDetails" type="fea:ServiceStandardDetailsType" />
+  <xs:element name="ServiceStandardName">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="Application Servers" />
+        <xs:enumeration value="Authentication / Single Sign-on (SSO)" />
+        <xs:enumeration value="Certificates / Digital Signature" />
+        <xs:enumeration value="Collaboration / Communications" />
+        <xs:enumeration value="Content Rendering" />
+        <xs:enumeration value="Data Exchange" />
+        <xs:enumeration value="Data Format / Classification" />
+        <xs:enumeration value="Data Transformation" />
+        <xs:enumeration value="Data Types / Validation" />
+        <xs:enumeration value="Database" />
+        <xs:enumeration value="Database Connectivity" />
+        <xs:enumeration value="Dependent Platform" />
+        <xs:enumeration value="Dynamic / Server-Side Display" />
+        <xs:enumeration value="Embedded Technology Devices" />
+        <xs:enumeration value="Enterprise Application Integration" />
+        <xs:enumeration value="Extranet" />
+        <xs:enumeration value="Hosting" />
+        <xs:enumeration value="Independent Platform" />
+        <xs:enumeration value="Integrated Development Environment (IDE)" />
+        <xs:enumeration value="Internet" />
+        <xs:enumeration value="Intranet" />
+        <xs:enumeration value="Local Area Network (LAN)" />
+        <xs:enumeration value="Legislative / Compliance" />
+        <xs:enumeration value="Media Servers" />
+        <xs:enumeration value="Middleware" />
+        <xs:enumeration value="Modeling" />
+        <xs:enumeration value="Network Devices / Standards" />
+        <xs:enumeration value="Other Electronic Channels" />
+        <xs:enumeration value="Peer to Peer (P2P)" />
+        <xs:enumeration value="Peripherals" />
+        <xs:enumeration value="Platform Dependent Technologies" />
+        <xs:enumeration value="Platform Independent Technologies" />
+        <xs:enumeration value="Portal Servers" />
+        <xs:enumeration value="Reporting and Analysis" />
+        <xs:enumeration value="Servers / Computers" />
+        <xs:enumeration value="Service Description / Interface" />
+        <xs:enumeration value="Service Discovery" />
+        <xs:enumeration value="Service Transport" />
+        <xs:enumeration value="Software Configuration Management" />
+        <xs:enumeration value="Static Display" />
+        <xs:enumeration value="Storage" />
+        <xs:enumeration value="Supporting Network Services" />
+        <xs:enumeration value="Supporting Security Services" />
+        <xs:enumeration value="Test Management" />
+        <xs:enumeration value="Video Conferencing" />
+        <xs:enumeration value="Virtual Private Network (VPN)" />
+        <xs:enumeration value="Wide Area Network (WAN)" />
+        <xs:enumeration value="Web Browser" />
+        <xs:enumeration value="Web Servers" />
+        <xs:enumeration value="Wireless / Mobile" />
+        <xs:enumeration value="Wireless / Mobile / Voice" />
+        <xs:enumeration value="Wireless / PDA" />
+        <xs:enumeration value="" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="ServiceType" type="fea:ServiceTypeType" />
+  <xs:element name="ServiceTypeDefinitionText" type="xs:string" />
+  <xs:element name="ServiceTypeDetails" type="fea:ServiceTypeDetailsType" />
+  <xs:element name="ServiceTypeName">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="Analysis and Statistics" />
+        <xs:enumeration value="Assets / Materials Management" />
+        <xs:enumeration value="Business Intelligence" />
+        <xs:enumeration value="Collaboration" />
+        <xs:enumeration value="Communication" />
+        <xs:enumeration value="Content Management" />
+        <xs:enumeration value="Customer Initiated Assistance" />
+        <xs:enumeration value="Customer Preferences" />
+        <xs:enumeration value="Customer Relationship Management" />
+        <xs:enumeration value="Data Management" />
+        <xs:enumeration value="Development and Integration" />
+        <xs:enumeration value="Document Management" />
+        <xs:enumeration value="Financial Management" />
+        <xs:enumeration value="Forms Management" />
+        <xs:enumeration value="Human Capital / Workforce Management" />
+        <xs:enumeration value="Human Resources" />
+        <xs:enumeration value="Investment Management" />
+        <xs:enumeration value="Knowledge Discovery" />
+        <xs:enumeration value="Knowledge Management" />
+        <xs:enumeration value="Management of Process" />
+        <xs:enumeration value="Organizational Management" />
+        <xs:enumeration value="Records Management" />
+        <xs:enumeration value="Reporting" />
+        <xs:enumeration value="Routing and Scheduling" />
+        <xs:enumeration value="Search" />
+        <xs:enumeration value="Security Management" />
+        <xs:enumeration value="Supply Chain Management" />
+        <xs:enumeration value="Systems Management" />
+        <xs:enumeration value="Tracking and Workflow" />
+        <xs:enumeration value="Visualization" />
+        <xs:enumeration value="" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="TechnicalReferenceModel" type="fea:TechnicalReferenceModelType" />
+  <xs:element name="MeasurementIndicator" type="fea:MeasurementIndicatorType" />
+  <xs:element name="MeasurementIndicatorName">
+    <xs:simpleType>
+      <xs:union memberTypes="xs:string" />
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="MeasurementIndicatorDefinitionText" type="xs:string" />
+  <xs:complexType name="MeasurementIndicatorType">
+    <xs:sequence>
+      <xs:element ref="fea:MeasurementIndicatorName" />
+      <xs:element ref="fea:MeasurementIndicatorDefinitionText" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="MeasurementIndicatorDetails" type="fea:MeasurementIndicatorDetailsType" />
+  <xs:complexType name="MeasurementIndicatorDetailsType">
+    <xs:sequence>
+      <xs:element ref="fea:MeasurementIndicator" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="MeasurementGrouping" type="fea:MeasurementGroupingType" />
+  <xs:element name="MeasurementGroupingDefinitionText" type="xs:string" />
+  <xs:element name="MeasurementGroupingName">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="Access to Care" />
+        <xs:enumeration value="Accounting" />
+        <xs:enumeration value="Agricultural Innovation and Services" />
+        <xs:enumeration value="Air Transportation" />
+        <xs:enumeration value="Asset and Liability Management" />
+        <xs:enumeration value="Benefits Management" />
+        <xs:enumeration value="Border and Transportation Security" />
+        <xs:enumeration value="Budget and Performance Integration" />
+        <xs:enumeration value="Budget Execution" />
+        <xs:enumeration value="Budget Formulation" />
+        <xs:enumeration value="Business and Industry Development" />
+        <xs:enumeration value="Capital Planning" />
+        <xs:enumeration value="Catastrophic Defense" />
+        <xs:enumeration value="Central Fiscal Operations" />
+        <xs:enumeration value="Central Personnel Management" />
+        <xs:enumeration value="Central Property Management" />
+        <xs:enumeration value="Central Records and Statistics Management" />
+        <xs:enumeration value="Citizen Protection" />
+        <xs:enumeration value="Collections and Receivables" />
+        <xs:enumeration value="Community and Regional Development" />
+        <xs:enumeration value="Compensation Management" />
+        <xs:enumeration value="Congressional Liaison Operations" />
+        <xs:enumeration value="Conservation, Marine and Land Management" />
+        <xs:enumeration value="Contingency Planning" />
+        <xs:enumeration value="Continuity of Operations" />
+        <xs:enumeration value="Corrective Action" />
+        <xs:enumeration value="Cost Accounting / Performance Measurement" />
+        <xs:enumeration value="Crime Prevention" />
+        <xs:enumeration value="Criminal Apprehension" />
+        <xs:enumeration value="Criminal Incarceration" />
+        <xs:enumeration value="Criminal Investigation and Surveillance" />
+        <xs:enumeration value="Criminal Rehabilitation" />
+        <xs:enumeration value="Cultural and Historic Exhibition" />
+        <xs:enumeration value="Cultural and Historic Preservation" />
+        <xs:enumeration value="Customer Service" />
+        <xs:enumeration value="Debt Collection" />
+        <xs:enumeration value="Disaster Monitoring and Prediction" />
+        <xs:enumeration value="Disaster Preparedness and Planning" />
+        <xs:enumeration value="Disaster Repair and Restore" />
+        <xs:enumeration value="Elementary, Secondary, and Vocational Education" />
+        <xs:enumeration value="Emergency Response" />
+        <xs:enumeration value="Employee Performance Management" />
+        <xs:enumeration value="Employee Relations" />
+        <xs:enumeration value="Energy Conservation and Preparedness" />
+        <xs:enumeration value="Energy Production" />
+        <xs:enumeration value="Energy Resource Management" />
+        <xs:enumeration value="Energy Supply" />
+        <xs:enumeration value="Enterprise Architecture" />
+        <xs:enumeration value="Environmental Monitoring and Forecasting" />
+        <xs:enumeration value="Environmental Remediation" />
+        <xs:enumeration value="Executive Functions" />
+        <xs:enumeration value="Facilities, Fleet and Equipment Management" />
+        <xs:enumeration value="Federal Asset Sales" />
+        <xs:enumeration value="Financial Sector Oversight" />
+        <xs:enumeration value="Food and Nutrition Assistance" />
+        <xs:enumeration value="Foreign Affairs" />
+        <xs:enumeration value="Funds Control" />
+        <xs:enumeration value="General Retirement and Disability" />
+        <xs:enumeration value="Global Trade" />
+        <xs:enumeration value="Goods Acquisition" />
+        <xs:enumeration value="Ground Transportation" />
+        <xs:enumeration value="Health Care Administration" />
+        <xs:enumeration value="Health Care Delivery Services" />
+        <xs:enumeration value="Health Care Research and Practitioner Education" />
+        <xs:enumeration value="Help Desk Services" />
+        <xs:enumeration value="Higher Education" />
+        <xs:enumeration value="Home Ownership Promotion" />
+        <xs:enumeration value="Housing Assistance" />
+        <xs:enumeration value="HR Strategy" />
+        <xs:enumeration value="Human Resources Development" />
+        <xs:enumeration value="Industry Sector Income Stabilization" />
+        <xs:enumeration value="Information Management" />
+        <xs:enumeration value="Intellectual Property Protection" />
+        <xs:enumeration value="Intelligence Analysis and Production" />
+        <xs:enumeration value="Intelligence Collection" />
+        <xs:enumeration value="Intelligence Planning" />
+        <xs:enumeration value="Intelligence Processing" />
+        <xs:enumeration value="Intelligence Dissemination" />
+        <xs:enumeration value="International Development and Humanitarian Aid" />
+        <xs:enumeration value="Inventory Control" />
+        <xs:enumeration value="IT Infrastructure Maintenance" />
+        <xs:enumeration value="Information Sharing" />
+        <xs:enumeration value="Information Security" />
+        <xs:enumeration value="Judicial Hearing" />
+        <xs:enumeration value="Key Asset and Critical Infrastructure Protection" />
+        <xs:enumeration value="Labor Relations" />
+        <xs:enumeration value="Labor Rights Management" />
+        <xs:enumeration value="Leadership Protection" />
+        <xs:enumeration value="Legal Defense" />
+        <xs:enumeration value="Legal Investigation" />
+        <xs:enumeration value="Legal Prosecution and Litigation" />
+        <xs:enumeration value="Legislation Testimony" />
+        <xs:enumeration value="Legislation Tracking" />
+        <xs:enumeration value="Legislative Functions" />
+        <xs:enumeration value="Lifecycle/Change Management" />
+        <xs:enumeration value="Logistics Management" />
+        <xs:enumeration value="Management Improvement"></xs:enumeration>
+        <xs:enumeration value="None" />
+        <xs:enumeration value="Official Information Dissemination" />
+        <xs:enumeration value="Operational Defense" />
+        <xs:enumeration value="Organization and Position Management" />
+        <xs:enumeration value="Payments" />
+        <xs:enumeration value="Policy and Guidance Development" />
+        <xs:enumeration value="Pollution Prevention and Control" />
+        <xs:enumeration value="Population Health Management and Consumer Safety" />
+        <xs:enumeration value="Postal Service" />
+        <xs:enumeration value="Product Outreach" />
+        <xs:enumeration value="Program Evaluation" />
+        <xs:enumeration value="Program Monitoring" />
+        <xs:enumeration value="Property Protection" />
+        <xs:enumeration value="Proposal Development" />
+        <xs:enumeration value="Public Comment Tracking" />
+        <xs:enumeration value="Public Relations" />
+        <xs:enumeration value="Record Retention" />
+        <xs:enumeration value="Recreational Resource Management and Tourism" />
+        <xs:enumeration value="Regulatory Creation" />
+        <xs:enumeration value="Reporting and Information" />
+        <xs:enumeration value="Resolution Facilitation" />
+        <xs:enumeration value="Rule Publication" />
+        <xs:enumeration value="Scientific and Technological Research and Innovation" />
+        <xs:enumeration value="Security Management" />
+        <xs:enumeration value="Separation Management" />
+        <xs:enumeration value="Service Recovery" />
+        <xs:enumeration value="Services Acquisition" />
+        <xs:enumeration value="Social Services" />
+        <xs:enumeration value="Space Exploration and Innovation" />
+        <xs:enumeration value="Space Operations" />
+        <xs:enumeration value="Staff Acquisition" />
+        <xs:enumeration value="Strategic National and Theater Defense" />
+        <xs:enumeration value="Strategic Planning" />
+        <xs:enumeration value="Substance Control" />
+        <xs:enumeration value="Survivor Compensation" />
+        <xs:enumeration value="System Development" />
+        <xs:enumeration value="System and Network Monitoring" />
+        <xs:enumeration value="System Maintenance" />
+        <xs:enumeration value="Tactical Defense" />
+        <xs:enumeration value="Tax and Fiscal Policy" />
+        <xs:enumeration value="Taxation Management" />
+        <xs:enumeration value="Training and Employment" />
+        <xs:enumeration value="Travel" />
+        <xs:enumeration value="Unemployment Compensation" />
+        <xs:enumeration value="User Fee Collection" />
+        <xs:enumeration value="Water Resource Management" />
+        <xs:enumeration value="Water Transportation" />
+        <xs:enumeration value="Worker Safety" />
+        <xs:enumeration value="Workforce Planning" />
+        <xs:enumeration value="Workplace Policy Development and Management" />
+        <xs:enumeration value="Customer Satisfaction" />
+        <xs:enumeration value="Customer Retention" />
+        <xs:enumeration value="Customer Complaints" />
+        <xs:enumeration value="Customer Impact or Burden" />
+        <xs:enumeration value="Customer Training" />
+        <xs:enumeration value="New Customers and Market Penetration" />
+        <xs:enumeration value="Frequency and Depth" />
+        <xs:enumeration value="Service Efficiency" />
+        <xs:enumeration value="Response Time" />
+        <xs:enumeration value="Delivery Time" />
+        <xs:enumeration value="Accuracy of Service or Product Delivered" />
+        <xs:enumeration value="Access" />
+        <xs:enumeration value="Service Availability" />
+        <xs:enumeration value="Automation" />
+        <xs:enumeration value="Integration" />
+        <xs:enumeration value="Financial Management" />
+        <xs:enumeration value="Costs" />
+        <xs:enumeration value="Planning" />
+        <xs:enumeration value="Savings and Cost Avoidance" />
+        <xs:enumeration value="Productivity" />
+        <xs:enumeration value="Efficiency" />
+        <xs:enumeration value="Cycle Time" />
+        <xs:enumeration value="Timeliness" />
+        <xs:enumeration value="Errors" />
+        <xs:enumeration value="Complaints" />
+        <xs:enumeration value="Security" />
+        <xs:enumeration value="Privacy" />
+        <xs:enumeration value="Participation" />
+        <xs:enumeration value="Policies" />
+        <xs:enumeration value="Compliance" />
+        <xs:enumeration value="Risk" />
+        <xs:enumeration value="Knowledge Management" />
+        <xs:enumeration value="Innovation and Improvement" />
+        <xs:enumeration value="Overall Costs" />
+        <xs:enumeration value="Licensing Costs" />
+        <xs:enumeration value="Support Costs" />
+        <xs:enumeration value="Operations and Maintenance Costs" />
+        <xs:enumeration value="Training and User Costs" />
+        <xs:enumeration value="Functionality" />
+        <xs:enumeration value="IT Composition" />
+        <xs:enumeration value="Standards Compliance and Deviations" />
+        <xs:enumeration value="System Response Time" />
+        <xs:enumeration value="Interoperability" />
+        <xs:enumeration value="Accessibility" />
+        <xs:enumeration value="Load levels" />
+        <xs:enumeration value="Technology Improvement" />
+        <xs:enumeration value="External Data Sharing" />
+        <xs:enumeration value="Data Standardization or Tagging" />
+        <xs:enumeration value="Internal Data Sharing" />
+        <xs:enumeration value="Data Reliability and Quality" />
+        <xs:enumeration value="Data Storage" />
+        <xs:enumeration value="Availability" />
+        <xs:enumeration value="Reliability" />
+        <xs:enumeration value="User Satisfaction" />
+        <xs:enumeration value="User Requirements" />
+        <xs:enumeration value="IT Contribution to Process, Customer, or Mission" />
+        <xs:enumeration value="" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:complexType name="MeasurementGroupingType">
+    <xs:sequence>
+      <xs:element ref="fea:MeasurementGroupingName" />
+      <xs:element ref="fea:MeasurementGroupingDefinitionText" />
+      <xs:element ref="fea:MeasurementIndicatorDetails" />
+    </xs:sequence>
+    <xs:attribute name="MeasurementGroupingID">
+      <xs:simpleType>
+        <xs:restriction base="xs:NMTOKEN">
+          <xs:enumeration value="001" />
+          <xs:enumeration value="010" />
+          <xs:enumeration value="101" />
+          <xs:enumeration value="102" />
+          <xs:enumeration value="103" />
+          <xs:enumeration value="104" />
+          <xs:enumeration value="105" />
+          <xs:enumeration value="106" />
+          <xs:enumeration value="107" />
+          <xs:enumeration value="108" />
+          <xs:enumeration value="109" />
+          <xs:enumeration value="011" />
+          <xs:enumeration value="110" />
+          <xs:enumeration value="111" />
+          <xs:enumeration value="112" />
+          <xs:enumeration value="113" />
+          <xs:enumeration value="114" />
+          <xs:enumeration value="115" />
+          <xs:enumeration value="116" />
+          <xs:enumeration value="117" />
+          <xs:enumeration value="118" />
+          <xs:enumeration value="119" />
+          <xs:enumeration value="012" />
+          <xs:enumeration value="120" />
+          <xs:enumeration value="121" />
+          <xs:enumeration value="122" />
+          <xs:enumeration value="123" />
+          <xs:enumeration value="124" />
+          <xs:enumeration value="125" />
+          <xs:enumeration value="126" />
+          <xs:enumeration value="127" />
+          <xs:enumeration value="128" />
+          <xs:enumeration value="129" />
+          <xs:enumeration value="013" />
+          <xs:enumeration value="136" />
+          <xs:enumeration value="137" />
+          <xs:enumeration value="138" />
+          <xs:enumeration value="139" />
+          <xs:enumeration value="014" />
+          <xs:enumeration value="140" />
+          <xs:enumeration value="141" />
+          <xs:enumeration value="142" />
+          <xs:enumeration value="143" />
+          <xs:enumeration value="144" />
+          <xs:enumeration value="145" />
+          <xs:enumeration value="146" />
+          <xs:enumeration value="015" />
+          <xs:enumeration value="016" />
+          <xs:enumeration value="017" />
+          <xs:enumeration value="175" />
+          <xs:enumeration value="176" />
+          <xs:enumeration value="177" />
+          <xs:enumeration value="178" />
+          <xs:enumeration value="179" />
+          <xs:enumeration value="018" />
+          <xs:enumeration value="180" />
+          <xs:enumeration value="181" />
+          <xs:enumeration value="019" />
+          <xs:enumeration value="002" />
+          <xs:enumeration value="020" />
+          <xs:enumeration value="021" />
+          <xs:enumeration value="210" />
+          <xs:enumeration value="211" />
+          <xs:enumeration value="212" />
+          <xs:enumeration value="213" />
+          <xs:enumeration value="214" />
+          <xs:enumeration value="215" />
+          <xs:enumeration value="216" />
+          <xs:enumeration value="022" />
+          <xs:enumeration value="023" />
+          <xs:enumeration value="024" />
+          <xs:enumeration value="025" />
+          <xs:enumeration value="026" />
+          <xs:enumeration value="027" />
+          <xs:enumeration value="003" />
+          <xs:enumeration value="033" />
+          <xs:enumeration value="034" />
+          <xs:enumeration value="035" />
+          <xs:enumeration value="036" />
+          <xs:enumeration value="037" />
+          <xs:enumeration value="038" />
+          <xs:enumeration value="039" />
+          <xs:enumeration value="004" />
+          <xs:enumeration value="040" />
+          <xs:enumeration value="041" />
+          <xs:enumeration value="042" />
+          <xs:enumeration value="043" />
+          <xs:enumeration value="044" />
+          <xs:enumeration value="045" />
+          <xs:enumeration value="046" />
+          <xs:enumeration value="047" />
+          <xs:enumeration value="048" />
+          <xs:enumeration value="049" />
+          <xs:enumeration value="005" />
+          <xs:enumeration value="050" />
+          <xs:enumeration value="051" />
+          <xs:enumeration value="052" />
+          <xs:enumeration value="053" />
+          <xs:enumeration value="054" />
+          <xs:enumeration value="055" />
+          <xs:enumeration value="056" />
+          <xs:enumeration value="057" />
+          <xs:enumeration value="058" />
+          <xs:enumeration value="059" />
+          <xs:enumeration value="006" />
+          <xs:enumeration value="060" />
+          <xs:enumeration value="061" />
+          <xs:enumeration value="062" />
+          <xs:enumeration value="063" />
+          <xs:enumeration value="064" />
+          <xs:enumeration value="065" />
+          <xs:enumeration value="066" />
+          <xs:enumeration value="007" />
+          <xs:enumeration value="008" />
+          <xs:enumeration value="009" />
+          <xs:enumeration value="091" />
+          <xs:enumeration value="092" />
+          <xs:enumeration value="093" />
+          <xs:enumeration value="094" />
+          <xs:enumeration value="095" />
+          <xs:enumeration value="096" />
+          <xs:enumeration value="097" />
+          <xs:enumeration value="098" />
+          <xs:enumeration value="099" />
+          <xs:enumeration value="100" />
+          <xs:enumeration value="217" />
+          <xs:enumeration value="246" />
+          <xs:enumeration value="247" />
+          <xs:enumeration value="248" />
+          <xs:enumeration value="249" />
+          <xs:enumeration value="250" />
+          <xs:enumeration value="251" />
+          <xs:enumeration value="252" />
+          <xs:enumeration value="253" />
+          <xs:enumeration value="254" />
+          <xs:enumeration value="255" />
+          <xs:enumeration value="256" />
+          <xs:enumeration value="228" />
+          <xs:enumeration value="257" />
+          <xs:enumeration value="258" />
+          <xs:enumeration value="259" />
+          <xs:enumeration value="260" />
+          <xs:enumeration value="261" />
+          <xs:enumeration value="262" />
+          <xs:enumeration value="263" />
+          <xs:enumeration value="264" />
+          <xs:enumeration value="999" />
+          <xs:enumeration value="420" />
+          <xs:enumeration value="421" />
+          <xs:enumeration value="422" />
+          <xs:enumeration value="423" />
+          <xs:enumeration value="424" />
+          <xs:enumeration value="425" />
+          <xs:enumeration value="426" />
+          <xs:enumeration value="427" />
+          <xs:enumeration value="428" />
+          <xs:enumeration value="429" />
+          <xs:enumeration value="430" />
+          <xs:enumeration value="431" />
+          <xs:enumeration value="432" />
+          <xs:enumeration value="433" />
+          <xs:enumeration value="434" />
+          <xs:enumeration value="435" />
+          <xs:enumeration value="436" />
+          <xs:enumeration value="437" />
+          <xs:enumeration value="438" />
+          <xs:enumeration value="439" />
+          <xs:enumeration value="440" />
+          <xs:enumeration value="441" />
+          <xs:enumeration value="442" />
+          <xs:enumeration value="443" />
+          <xs:enumeration value="444" />
+          <xs:enumeration value="445" />
+          <xs:enumeration value="446" />
+          <xs:enumeration value="447" />
+          <xs:enumeration value="448" />
+          <xs:enumeration value="449" />
+          <xs:enumeration value="450" />
+          <xs:enumeration value="451" />
+          <xs:enumeration value="452" />
+          <xs:enumeration value="453" />
+          <xs:enumeration value="454" />
+          <xs:enumeration value="455" />
+          <xs:enumeration value="456" />
+          <xs:enumeration value="457" />
+          <xs:enumeration value="458" />
+          <xs:enumeration value="459" />
+          <xs:enumeration value="460" />
+          <xs:enumeration value="461" />
+          <xs:enumeration value="462" />
+          <xs:enumeration value="463" />
+          <xs:enumeration value="464" />
+          <xs:enumeration value="465" />
+          <xs:enumeration value="466" />
+          <xs:enumeration value="467" />
+          <xs:enumeration value="468" />
+          <xs:enumeration value="469" />
+          <xs:enumeration value="470" />
+          <xs:enumeration value="471" />
+          <xs:enumeration value="472" />
+          <xs:enumeration value="473" />
+          <xs:enumeration value="474" />
+          <xs:enumeration value="475" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:element name="MeasurementGroupingDetails" type="fea:MeasurementGroupingDetailsType" />
+  <xs:complexType name="MeasurementGroupingDetailsType">
+    <xs:sequence>
+      <xs:element ref="fea:MeasurementGrouping" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="MeasurementCategory" type="fea:MeasurementCategoryType" />
+  <xs:element name="MeasurementCategoryDefinitionText" type="xs:string" />
+  <xs:element name="MeasurementCategoryName">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="Administrative Management" />
+        <xs:enumeration value="Community and Social Services" />
+        <xs:enumeration value="Controls and Oversight" />
+        <xs:enumeration value="Correctional Activities" />
+        <xs:enumeration value="Defense and National Security" />
+        <xs:enumeration value="Disaster Management" />
+        <xs:enumeration value="Economic Development" />
+        <xs:enumeration value="Education" />
+        <xs:enumeration value="Energy" />
+        <xs:enumeration value="Environmental Management" />
+        <xs:enumeration value="Financial Management" />
+        <xs:enumeration value="General Government" />
+        <xs:enumeration value="General Science and Innovation" />
+        <xs:enumeration value="Health" />
+        <xs:enumeration value="Homeland Security" />
+        <xs:enumeration value="Human Resource Management" />
+        <xs:enumeration value="Income Security" />
+        <xs:enumeration value="Information and Technology Management" />
+        <xs:enumeration value="Intelligence Operations" />
+        <xs:enumeration value="Internal Risk Management and Mitigation" />
+        <xs:enumeration value="International Affairs and Commerce" />
+        <xs:enumeration value="Law Enforcement" />
+        <xs:enumeration value="Legislative Relations" />
+        <xs:enumeration value="Litigation and Judicial Activities" />
+        <xs:enumeration value="Natural Resources" />
+        <xs:enumeration value="None" />
+        <xs:enumeration value="Planning and Budgeting" />
+        <xs:enumeration value="Public Affairs" />
+        <xs:enumeration value="Regulatory Development" />
+        <xs:enumeration value="Revenue Collection" />
+        <xs:enumeration value="Supply Chain Management" />
+        <xs:enumeration value="Transportation" />
+        <xs:enumeration value="Workforce Management" />
+        <xs:enumeration value="Customer Benefit" />
+        <xs:enumeration value="Service Coverage" />
+        <xs:enumeration value="Timeliness and Responsiveness" />
+        <xs:enumeration value="Service Quality" />
+        <xs:enumeration value="Service Accessibility" />
+        <xs:enumeration value="Financial" />
+        <xs:enumeration value="Productivity" />
+        <xs:enumeration value="Cycle Time and Timeliness" />
+        <xs:enumeration value="Quality" />
+        <xs:enumeration value="Security and Privacy" />
+        <xs:enumeration value="Management and Innovation" />
+        <xs:enumeration value="Technology Costs" />
+        <xs:enumeration value="Quality Assurance" />
+        <xs:enumeration value="Efficiency" />
+        <xs:enumeration value="Information and Data" />
+        <xs:enumeration value="Reliability and Availability" />
+        <xs:enumeration value="Effectiveness" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:complexType name="MeasurementCategoryType">
+    <xs:sequence>
+      <xs:element ref="fea:MeasurementCategoryName" />
+      <xs:element ref="fea:MeasurementCategoryDefinitionText" />
+      <xs:element ref="fea:MeasurementGroupingDetails" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="MeasurementArea" type="fea:MeasurementAreaType" />
+  <xs:element name="MeasurementCategoryDetails" type="fea:MeasurementCategoryDetailsType" />
+  <xs:complexType name="MeasurementCategoryDetailsType">
+    <xs:sequence>
+      <xs:element ref="fea:MeasurementCategory" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="MeasurementAreaType">
+    <xs:sequence>
+      <xs:element ref="fea:MeasurementAreaName" />
+      <xs:element ref="fea:MeasurementAreaDefinitionText" />
+      <xs:element ref="fea:MeasurementCategoryDetails" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="PerformanceReferenceModel" type="fea:PerformanceReferenceModelType" />
+  <xs:element name="MeasurementAreaDetails" type="fea:MeasurementAreaDetailsType" />
+  <xs:complexType name="MeasurementAreaDetailsType">
+    <xs:sequence>
+      <xs:element ref="fea:MeasurementArea" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="PerformanceReferenceModelType">
+    <xs:sequence>
+      <xs:element ref="fea:MeasurementAreaDetails" />
+    </xs:sequence>
+    <xs:attribute name="performanceReferenceModelVersion" />
+  </xs:complexType>
+  <xs:element name="MeasurementAreaName">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="Mission and Business Results" />
+        <xs:enumeration value="Customer Results" />
+        <xs:enumeration value="Processes and Activities" />
+        <xs:enumeration value="Human Capital" />
+        <xs:enumeration value="Technology" />
+        <xs:enumeration value="Other Fixed Assets" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="MeasurementAreaDefinitionText" type="xs:string" />
+</xs:schema>
