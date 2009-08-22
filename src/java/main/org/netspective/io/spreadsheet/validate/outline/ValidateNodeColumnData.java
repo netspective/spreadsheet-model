@@ -36,10 +36,17 @@ public class ValidateNodeColumnData implements NodeValidationRule
             final CellValidationRule[] rules = entry.getValue();
 
             final TableCell cell = row.findCellForColumn(column);
-            for(final CellValidationRule cvr : rules)
+            if(cell != null)
             {
-                // validate and store the messages in appropriate error/warning list
-                cvr.isValid(vc, table, row, cell, cellMessages);
+                for(final CellValidationRule cvr : rules)
+                {
+                    // validate and store the messages in appropriate error/warning list
+                    cvr.isValid(vc, table, row, cell, cellMessages);
+                }
+            }
+            else
+            {
+                throw new RuntimeException(String.format("Unable to find cell for Column %s at row %s in outline node.", column, node));
             }
         }
 

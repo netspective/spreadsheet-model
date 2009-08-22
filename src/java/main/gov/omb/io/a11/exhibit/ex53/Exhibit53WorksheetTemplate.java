@@ -72,7 +72,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
     private final Column investmentTitleColumn;
     private final Column descrColumn;
 
-    private final InvestmentNodeRule investmentNodeRule = new InvestmentNodeRule();
+    private final InvestmentNodeRule investmentNodeRule;
 
     public class PercentageRule implements CellValidationRule
     {
@@ -108,7 +108,9 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
         public boolean isValid(final ValidationContext vc, final TableOutline outline, final TableOutlineNode node,
                                final List<NodeValidationMessage> messages)
         {
-            return delegateRule.isValid(vc, outline, node, messages);
+            final boolean valid = delegateRule.isValid(vc, outline, node, messages);            
+            System.out.printf("Valid: %s - %s", valid, messages);
+            return valid;
         }
     }
 
@@ -184,6 +186,8 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
         rowValidationRules.add(new ValidateColumnData());
 
         rowCaches.add(portfolioSectionsCacheDefn);
+
+        investmentNodeRule = new InvestmentNodeRule();
     }
 
     public ValidationContext createValidationContext()

@@ -248,6 +248,9 @@ public class WorksheetConsumer
             // validate and store messages in errors and warnings lists
             rule.isValid(vc, outline, node, messages);
         }
+
+        for(final TableOutlineNode child : node.getChildren())
+            validateNode(vc, outline, child, messages);
     }
 
     public OutlineDataValidationResult validateOutlineData(final TableOutline outline)
