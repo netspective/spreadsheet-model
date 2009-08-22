@@ -75,6 +75,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
     private final InvestmentNodeRule investmentNodeRule;
     private final FundingSourceNodeRule fundingSourceNodeRule;
     private final DefaultColumn homelandSecurityPrioritiesColumn;
+    private final DefaultColumn finSystemPctColumn;
 
     public class PercentageRule implements CellValidationRule
     {
@@ -106,6 +107,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
             final Map<Column, CellValidationRule[]> cellValidationRules = new HashMap<Column, CellValidationRule[]>();
             cellValidationRules.put(descrColumn, new CellValidationRule[] { descrTruncatedRule });
             cellValidationRules.put(homelandSecurityPrioritiesColumn, new CellValidationRule[] { new IntegerEnumerationRule(MessageCodeFactory.HS_INVALID_PRIORITY, validHSPriorities) });
+            cellValidationRules.put(finSystemPctColumn, new CellValidationRule[] { new PercentageRule(MessageCodeFactory.FINPCT_INVALID) });
 
             delegateRule = new ValidateNodeColumnData(cellValidationRules);
         }
@@ -174,7 +176,8 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
         columns.add(new DefaultColumn(stringValueHandler, groupNamesRowNumber, columnHeadingsRowNumber, 6, "Line of Business (3 digit code)", primaryFEAMapping));
         columns.add(new DefaultColumn(stringValueHandler, groupNamesRowNumber, columnHeadingsRowNumber, 7, "Sub-Function (3 digit code)", primaryFEAMapping));
 
-        columns.add(new DefaultColumn(doubleValueHandler, groupNamesRowNumber, columnHeadingsRowNumber, 8, "Core Financial System (%)", new CellValidationRule[] { new PercentageRule(MessageCodeFactory.FINPCT_INVALID) } ));
+        finSystemPctColumn = new DefaultColumn(doubleValueHandler, groupNamesRowNumber, columnHeadingsRowNumber, 8, "Core Financial System (%)");
+        columns.add(finSystemPctColumn);
 
         final ColumnGroup hspd12 = new DefaultColumnGroup(groupNamesRowNumber, "HSPD-12 ($M)", 9, 9);
         columnGroups.add(hspd12);
