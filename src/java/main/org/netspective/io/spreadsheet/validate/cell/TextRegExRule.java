@@ -24,7 +24,6 @@ public class TextRegExRule implements CellValidationRule
     public boolean isValid(final ValidationContext vc, final Table table, final TableRow row, final TableCell cell, final List<CellValidationMessage> messages)
     {
         final StringBuilder unassignableTextValue = new StringBuilder();
-        System.out.printf("Table %s, row %s, cell %s", table, row, cell);
         final ValueHandler vh = cell.getColumn().getValueHandler();
         if(vh.isValid(cell.getCell(), unassignableTextValue))
         {

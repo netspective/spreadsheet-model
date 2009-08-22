@@ -11,6 +11,8 @@ public class MessageCodeFactory
     public static final String TITLE_REQUIRED  = "E-TITLE-0001";
     public static final String TITLE_LENGTH    = "E-TITLE-0002";
 
+    public static final String TITLE_INVALID_FUNDING_SRC_BUDGET_ACCOUNT = "E-TITLE-0003";
+
     public static final String DESCR_LENGTH    = "E-DESCR-0000";
     public static final String DESCR_TRUNCATED = "E-DESCR-0001";
 

@@ -73,6 +73,8 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
     private final Column descrColumn;
 
     private final InvestmentNodeRule investmentNodeRule;
+    private final FundingSourceNodeRule fundingSourceNodeRule;
+    private final DefaultColumn homelandSecurityPrioritiesColumn;
 
     public class PercentageRule implements CellValidationRule
     {
@@ -98,9 +100,12 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
         public InvestmentNodeRule()
         {
             final TextRegExRule descrTruncatedRule = new TextRegExRule(MessageCodeFactory.DESCR_TRUNCATED, ".+[\\.\\,\\!\\?\\(\\)\\{\\}\\[\\]\\<\\>\\'\\\"]$", "An investment description value seems to be truncated at %s. Please ensure that it is properly summarized, and not simply truncated (should end with proper sentence punctuation like '%3$s').");
+            final Set<Integer> validHSPriorities = new HashSet<Integer>();
+            for(int i = 1; i <= 6; i++) validHSPriorities.add(i);
 
             final Map<Column, CellValidationRule[]> cellValidationRules = new HashMap<Column, CellValidationRule[]>();
             cellValidationRules.put(descrColumn, new CellValidationRule[] { descrTruncatedRule });
+            cellValidationRules.put(homelandSecurityPrioritiesColumn, new CellValidationRule[] { new IntegerEnumerationRule(MessageCodeFactory.HS_INVALID_PRIORITY, validHSPriorities) });
 
             delegateRule = new ValidateNodeColumnData(cellValidationRules);
         }
@@ -108,9 +113,28 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
         public boolean isValid(final ValidationContext vc, final TableOutline outline, final TableOutlineNode node,
                                final List<NodeValidationMessage> messages)
         {
-            final boolean valid = delegateRule.isValid(vc, outline, node, messages);            
-            System.out.printf("Valid: %s - %s", valid, messages);
-            return valid;
+            return delegateRule.isValid(vc, outline, node, messages);
+        }
+    }
+
+    public class FundingSourceNodeRule implements NodeValidationRule
+    {
+        private final NodeValidationRule delegateRule;
+
+        public FundingSourceNodeRule()
+        {
+            final TextRegExRule budgetAccountRule = new TextRegExRule(MessageCodeFactory.TITLE_INVALID_FUNDING_SRC_BUDGET_ACCOUNT, "^[0-9]{3}-[0-9]{2}-[0-9]{4}-[0-9]$", "Invalid budget account in funding source at %s. It should look like 000-00-0000-0.");
+
+            final Map<Column, CellValidationRule[]> cellValidationRules = new HashMap<Column, CellValidationRule[]>();
+            cellValidationRules.put(investmentTitleColumn, new CellValidationRule[] { budgetAccountRule });
+
+            delegateRule = new ValidateNodeColumnData(cellValidationRules);
+        }
+
+        public boolean isValid(final ValidationContext vc, final TableOutline outline, final TableOutlineNode node,
+                               final List<NodeValidationMessage> messages)
+        {
+            return delegateRule.isValid(vc, outline, node, messages);
         }
     }
 
@@ -158,11 +182,8 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
 
         final ColumnGroup homelandSecurity = new DefaultColumnGroup(groupNamesRowNumber, "Homeland Security", 10, 10);
         columnGroups.add(homelandSecurity);
-
-        final Set<Integer> validHSPriorities = new HashSet<Integer>();
-        for(int i = 1; i <= 6; i++) validHSPriorities.add(i);
-        columnValidations = new CellValidationRule[] { new IntegerEnumerationRule(MessageCodeFactory.HS_INVALID_PRIORITY, validHSPriorities) };
-        columns.add(new DefaultColumn(intArrayValueHandler, groupNamesRowNumber, columnHeadingsRowNumber,10, "Priority Identifier (Select all that apply)", columnValidations, homelandSecurity));
+        homelandSecurityPrioritiesColumn = new DefaultColumn(intArrayValueHandler, groupNamesRowNumber, columnHeadingsRowNumber,10, "Priority Identifier (Select all that apply)", homelandSecurity);
+        columns.add(homelandSecurityPrioritiesColumn);
 
         final ColumnGroup dme = new DefaultColumnGroup(groupNamesRowNumber, "DME ($M)", 11, 13);
         columnGroups.add(dme);
@@ -188,6 +209,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
         rowCaches.add(portfolioSectionsCacheDefn);
 
         investmentNodeRule = new InvestmentNodeRule();
+        fundingSourceNodeRule = new FundingSourceNodeRule();
     }
 
     public ValidationContext createValidationContext()
@@ -282,7 +304,12 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
 
             final String thisRowInvestmentID = String.format("%s-%s", upi.getInvestmentTypeIdentifier(), upi.getInvestmentIdentificationNumber());
             if(activeInvestment.equals(thisRowInvestmentID))
-                activeInvestmentChildNodes.add(new DefaultTableOutlineNode(investmentDataRow, rowIndex, rowIndex));
+            {
+                if(upi.isFundingSourceLine())
+                    activeInvestmentChildNodes.add(new DefaultTableOutlineNode(investmentDataRow, rowIndex, rowIndex, new NodeValidationRule[] { fundingSourceNodeRule }));
+                else
+                    activeInvestmentChildNodes.add(new DefaultTableOutlineNode(investmentDataRow, rowIndex, rowIndex));
+            }
             else
             {
                 activeInvestment = thisRowInvestmentID;

@@ -73,7 +73,7 @@ public class DefaultUPI implements UPI
             issues.add(String.format("Investment type component '%s' of UPI '%s' is not valid. It should be 00, 01, 02, 03, or 04.", investmentType, upiText));
 
         if (!lineType.equals("00") && !lineType.equals("04") && !lineType.equals("09") && !lineType.equals(EGOV_LINETYPE))
-            issues.add(String.format("Investment type component '%s' of UPI '%s' is not valid. It should be 00, 04, or 09, or 24.", lineType, upiText));
+            issues.add(String.format("Investment line type component '%s' of UPI '%s' is not valid. It should be 00, 04, or 09, or 24.", lineType, upiText));
     }
 
     public int getBudgetYear()
@@ -116,9 +116,19 @@ public class DefaultUPI implements UPI
         return identificationNumber;
     }
 
-    public String getInvestmentCategory()
+    public String getLineType()
     {
         return lineType;
+    }
+
+    public boolean isFundingSourceLine()
+    {
+        return lineType != null && lineType.equals("04");
+    }
+
+    public boolean isFundingSourceSummaryLine()
+    {
+        return lineType != null && lineType.equals("09");
     }
 
     public boolean isValid()

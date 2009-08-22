@@ -11,7 +11,10 @@ public interface UPI
     public String getMissionAreaIdentifier();
     public String getInvestmentTypeIdentifier();
     public String getInvestmentIdentificationNumber();
-    public String getInvestmentCategory();
+
+    public String getLineType();
+    public boolean isFundingSourceLine();
+    public boolean isFundingSourceSummaryLine();
 
     public boolean isValid();
     public String[] getIssues();
