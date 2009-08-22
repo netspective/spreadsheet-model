@@ -1,0 +1,51 @@
+<project name="library" basedir=".">
+
+    <property name="module.home"                    value="../../"/>
+    <property name="module.src.home"                value="${module.home}/src/java"/>
+    <property name="module.src.main.home"           value="${module.src.home}/main"/>
+    <property name="module.build.home"              value="${module.home}/support/build"/>
+    <property name="module.build.classes.main.home" value="${module.build.home}/tmp/classes"/>
+    <property name="module.build.deploy.main.home"  value="${module.build.home}/tmp/deploy"/>
+    <property name="module.lib.home"                value="${module.home}/lib"/>
+    <property name="module.jar.home"                value="${module.lib.home}"/>
+    <property name="module.jar.name"                value="spreadsheet-to-table.jar"/>
+
+    <path id="module.classpath.runtime">
+        <fileset dir="${module.lib.home}/runtime" includes="**/*.jar"/>
+    </path>
+
+    <target name="clean">
+        <delete dir="${module.build.classes.main.home}"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${module.build.classes.main.home}"/>
+        <javac srcdir="${module.src.main.home}" destdir="${module.build.classes.main.home}">
+            <classpath refid="module.classpath.runtime"/>
+        </javac>
+    </target>
+
+    <target name="jar" depends="compile">
+        <mkdir dir="${module.jar.home}"/>
+        <jar destfile="${module.jar.home}/${module.jar.name}" basedir="${module.build.classes.main.home}">
+            <manifest>
+                <attribute name="Main-Class" value="gov.omb.io.a11.exhibit.ex53.Exhibit53"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="validator" depends="jar">
+        <delete dir="${module.build.deploy.main.home}"/>
+        <mkdir dir="${module.build.deploy.main.home}"/>
+        <unjar src="${module.jar.home}/${module.jar.name}" dest="${module.build.deploy.main.home}"/>
+        <unjar src="${module.lib.home}/runtime/commons-cli-1.2.jar" dest="${module.build.deploy.main.home}"/>
+        <unjar src="${module.lib.home}/runtime/poi-3.5-beta6-20090622.jar" dest="${module.build.deploy.main.home}"/>
+        <unjar src="${module.lib.home}/runtime/poi-ooxml-3.5-beta6-20090622.jar" dest="${module.build.deploy.main.home}"/>
+        <jar destfile="${module.jar.home}/ex53-validator.jar" basedir="${module.build.deploy.main.home}">
+            <manifest>
+                <attribute name="Main-Class" value="gov.omb.io.a11.exhibit.ex53.Exhibit53"/>
+            </manifest>
+        </jar>
+    </target>
+
+</project>
