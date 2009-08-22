@@ -497,8 +497,8 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
         private static final String AGENCY_TOTAL_IT_INVESTMENT_PORTFOLIO = "Agency Total IT Investment Portfolio";
         private static final String SECTION_IDENTIFIER = "Section";
 
-        private final Pattern totalItInvestmentPattern = Pattern.compile("\\d\\d\\d-\\d\\d-00-00-00-0000-00");
-        private final Pattern sectionIdentifierPattern = Pattern.compile("\\d\\d\\d-\\d\\d-(0[1-6])-00-00-0000-00");
+        private final Pattern totalItInvestmentPattern = Pattern.compile("[0-9]{3}-[0-9]{2}-00-00-00-0000-00");
+        private final Pattern sectionIdentifierPattern = Pattern.compile("[0-9]{3}-[0-9]{2}-(0[1-6])-00-00-0000-00");
 
         private final Map<String, List<TableRow>> rowCache = new HashMap<String, List<TableRow>>();
 

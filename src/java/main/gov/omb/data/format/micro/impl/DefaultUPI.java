@@ -7,7 +7,7 @@ import java.util.List;
 
 public class DefaultUPI implements UPI
 {
-    public static final String UPI_REG_EX = "\\d\\d\\d-\\d\\d-\\d\\d-\\d\\d-\\d\\d-\\d\\d\\d\\d-\\d\\d";
+    public static final String UPI_REG_EX = "[0-9]{3}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{4}-[0-9]{2}";
     public static final int	UPI_FIELD_INDEX_AGENCY				  = 0;
     public static final int	UPI_FIELD_INDEX_BUREAU				  = 1;
     public static final int	UPI_FIELD_INDEX_PART_NUMBER			  = 2;
