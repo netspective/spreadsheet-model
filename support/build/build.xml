@@ -29,7 +29,7 @@
         <mkdir dir="${module.jar.home}"/>
         <jar destfile="${module.jar.home}/${module.jar.name}" basedir="${module.build.classes.main.home}">
             <manifest>
-                <attribute name="Main-Class" value="gov.omb.io.a11.exhibit.ex53.Exhibit53"/>
+                <attribute name="Main-Class" value="gov.omb.io.a11.exhibit.ex53.Exhibit53Validator"/>
             </manifest>
         </jar>
     </target>
@@ -43,7 +43,7 @@
         <unjar src="${module.lib.home}/runtime/poi-ooxml-3.5-beta6-20090622.jar" dest="${module.build.deploy.main.home}"/>
         <jar destfile="${module.jar.home}/ex53-validator.jar" basedir="${module.build.deploy.main.home}">
             <manifest>
-                <attribute name="Main-Class" value="gov.omb.io.a11.exhibit.ex53.Exhibit53"/>
+                <attribute name="Main-Class" value="gov.omb.io.a11.exhibit.ex53.Exhibit53Validator"/>
             </manifest>
         </jar>
     </target>

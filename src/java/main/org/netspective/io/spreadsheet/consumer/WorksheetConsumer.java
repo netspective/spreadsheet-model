@@ -11,7 +11,6 @@ import org.netspective.io.spreadsheet.outline.TableOutlineNode;
 import org.netspective.io.spreadsheet.template.WorksheetTemplate;
 import org.netspective.io.spreadsheet.validate.ValidationContext;
 import org.netspective.io.spreadsheet.validate.outline.NodeValidationMessage;
-import org.netspective.io.spreadsheet.validate.outline.NodeValidationRule;
 import org.netspective.io.spreadsheet.validate.outline.OutlineValidationMessage;
 import org.netspective.io.spreadsheet.validate.row.RowValidationMessage;
 import org.netspective.io.spreadsheet.validate.row.RowValidationRule;
@@ -241,25 +240,13 @@ public class WorksheetConsumer
         };
     }
 
-    protected void validateNode(final ValidationContext vc, final TableOutline outline, final TableOutlineNode node, final List<NodeValidationMessage> messages)
-    {
-        for(final NodeValidationRule rule : node.getValidationRules())
-        {
-            // validate and store messages in errors and warnings lists
-            rule.isValid(vc, outline, node, messages);
-        }
-
-        for(final TableOutlineNode child : node.getChildren())
-            validateNode(vc, outline, child, messages);
-    }
-
     public OutlineDataValidationResult validateOutlineData(final TableOutline outline)
     {
         final ValidationContext vc = worksheetTemplate.createValidationContext();
         final List<NodeValidationMessage> nodeMessages = new ArrayList<NodeValidationMessage>();
 
         for(final TableOutlineNode node : outline.getRootNodes())
-            validateNode(vc, outline, node, nodeMessages);
+            node.isValid(vc, nodeMessages);
 
         final List<NodeValidationMessage> nodeErrors = new ArrayList<NodeValidationMessage>();
         final List<NodeValidationMessage> nodeWarnings = new ArrayList<NodeValidationMessage>();

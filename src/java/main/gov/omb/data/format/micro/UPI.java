@@ -14,7 +14,7 @@ public interface UPI
 
     public String getLineType();
     public boolean isFundingSourceLine();
-    public boolean isFundingSourceSummaryLine();
+    public boolean isSubtotalLine();
 
     public boolean isValid();
     public String[] getIssues();

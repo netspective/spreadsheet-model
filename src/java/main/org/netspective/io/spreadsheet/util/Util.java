@@ -1,6 +1,9 @@
 package org.netspective.io.spreadsheet.util;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.netspective.io.spreadsheet.outline.TableOutlineNode;
+
+import java.util.List;
 
 public class Util
 {
@@ -55,5 +58,21 @@ public class Util
     public static String getCellLocator(final Cell cell)
     {
         return getCellLocator(cell.getColumnIndex()+1, cell.getRowIndex()+1);
+    }
+
+    public interface DebugNodeRenderer
+    {
+        public String nodeToString(final int level, final TableOutlineNode node);
+    }
+
+    public static String renderNodes(final int level, final List<TableOutlineNode> nodes, final DebugNodeRenderer nodeRenderer)
+    {
+        final StringBuffer result = new StringBuffer();
+        for(final TableOutlineNode tsn : nodes)
+        {
+            result.append(nodeRenderer.nodeToString(level, tsn));
+            result.append(renderNodes(level + 1, tsn.getChildren(), nodeRenderer));
+        }
+        return result.toString();
     }
 }

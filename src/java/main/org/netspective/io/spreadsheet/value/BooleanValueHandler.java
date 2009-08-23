@@ -37,6 +37,7 @@ public class BooleanValueHandler implements ValueHandler
             case Cell.CELL_TYPE_BLANK:
             case Cell.CELL_TYPE_BOOLEAN:
             case Cell.CELL_TYPE_NUMERIC:
+            case Cell.CELL_TYPE_FORMULA:
                 return true;
 
             case Cell.CELL_TYPE_STRING:
@@ -47,10 +48,6 @@ public class BooleanValueHandler implements ValueHandler
 
             case Cell.CELL_TYPE_ERROR:
                 unassignableValueAsText.append(String.format("'%s' (Excel error)", cell.getErrorCellValue()));
-                return false;
-
-            case Cell.CELL_TYPE_FORMULA:
-                unassignableValueAsText.append(String.format("'%s' (Excel formula)", cell.getCellFormula()));
                 return false;
         }
 
@@ -64,12 +61,12 @@ public class BooleanValueHandler implements ValueHandler
         {
             case Cell.CELL_TYPE_BLANK:
             case Cell.CELL_TYPE_ERROR:
-            case Cell.CELL_TYPE_FORMULA:
                 return defaultValue;
 
             case Cell.CELL_TYPE_BOOLEAN:
                 return cell.getBooleanCellValue();
 
+            case Cell.CELL_TYPE_FORMULA:
             case Cell.CELL_TYPE_NUMERIC:
                 return cell.getNumericCellValue() != 0;
 

@@ -18,8 +18,8 @@ import org.netspective.io.spreadsheet.consumer.WorksheetDataHandler;
 import org.netspective.io.spreadsheet.message.Message;
 import org.netspective.io.spreadsheet.model.TableCell;
 import org.netspective.io.spreadsheet.model.TableRow;
-import org.netspective.io.spreadsheet.outline.DefaultTableOutlineNode;
 import org.netspective.io.spreadsheet.outline.TableOutlineNode;
+import org.netspective.io.spreadsheet.util.Util;
 import org.netspective.io.spreadsheet.validate.row.RowValidationMessage;
 
 import java.io.File;
@@ -27,9 +27,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-public class Exhibit53
+public class Exhibit53Validator
 {
     public static void main(final String[] args) throws ParseException, IOException, InvalidFormatException
     {
@@ -127,8 +128,7 @@ public class Exhibit53
                 if(splitBureauCodes != null)
                 {
                     bureauCodesList = new ArrayList<String>();
-                    for(final String bc : splitBureauCodes)
-                        bureauCodesList.add(bc);
+                    bureauCodesList.addAll(Arrays.asList(splitBureauCodes));
                 }
                 else
                     bureauCodesList = null;
@@ -189,13 +189,13 @@ public class Exhibit53
 
                 System.out.printf("[** Completed **] All four phases of validation are complete.\n");
                 if(debug)
-                    System.out.println(DefaultTableOutlineNode.toDebugText(0, odvr.getTableOutline().getRootNodes(), new DebuggingRenderer()));
+                    System.out.println(Util.renderNodes(0, odvr.getTableOutline().getRootNodes(), new DebuggingRenderer()));
             }
         }
         catch (MissingOptionException e)
         {
             final HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp( "Exhibit53", options);
+            formatter.printHelp( "Exhibit53Validator", options);
         }
     }
 
@@ -210,7 +210,7 @@ public class Exhibit53
         }
     }
 
-    public static class DebuggingRenderer implements DefaultTableOutlineNode.DebugNodeRenderer
+    public static class DebuggingRenderer implements Util.DebugNodeRenderer
     {
         public String nodeToString(final int level, final TableOutlineNode node)
         {

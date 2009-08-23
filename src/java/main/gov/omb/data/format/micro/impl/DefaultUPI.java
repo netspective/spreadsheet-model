@@ -126,7 +126,7 @@ public class DefaultUPI implements UPI
         return lineType != null && lineType.equals("04");
     }
 
-    public boolean isFundingSourceSummaryLine()
+    public boolean isSubtotalLine()
     {
         return lineType != null && lineType.equals("09");
     }

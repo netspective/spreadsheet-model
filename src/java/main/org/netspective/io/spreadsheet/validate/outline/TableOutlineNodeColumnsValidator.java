@@ -14,11 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class ValidateNodeColumnData implements NodeValidationRule
+public class TableOutlineNodeColumnsValidator
 {
     private final Map<Column, CellValidationRule[]> cellValidationRules;
 
-    public ValidateNodeColumnData(final Map<Column, CellValidationRule[]> cellValidationRules)
+    public TableOutlineNodeColumnsValidator(final Map<Column, CellValidationRule[]> cellValidationRules)
     {
         this.cellValidationRules = cellValidationRules;
     }
@@ -77,7 +77,7 @@ public class ValidateNodeColumnData implements NodeValidationRule
 
                 public String getCode()
                 {
-                    return ValidateNodeColumnData.class.getName();
+                    return TableOutlineNodeColumnsValidator.class.getName();
                 }
 
                 public String getMessage()
