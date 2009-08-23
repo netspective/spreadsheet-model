@@ -41,6 +41,11 @@ public class Exhibit53Validator
         try
         {
             commandLine = parser.parse(options, args);
+            if(commandLine.hasOption("help"))
+            {
+                showHelp(options);
+                return;                
+            }
 
             final Map<String, String> parameterValues = new HashMap<String, String>();
             for(final Option option : commandLine.getOptions())
@@ -58,11 +63,16 @@ public class Exhibit53Validator
         }
         catch (ParseException e)
         {
-            System.err.printf("Error: %s", e.getMessage());
-            final HelpFormatter formatter = new HelpFormatter();
-            formatter.setWidth(120);
-            formatter.printHelp( "Exhibit53Validator", options);
+            System.err.printf("** ERROR **: %s\n", e.getMessage());
+            showHelp(options);
         }
+    }
+
+    public static void showHelp(final Options options)
+    {
+        final HelpFormatter formatter = new HelpFormatter();
+        formatter.setWidth(120);
+        formatter.printHelp( "Exhibit53Validator --workbook-name Exhibit53.xls --budget-year=2011 --agency-code=123", options);
     }
 
     public static class ValidationStageHandler implements Exhibit53WorksheetConsumer.ValidationStageHandler
@@ -82,8 +92,23 @@ public class Exhibit53Validator
         public void completeStage(final Exhibit53WorksheetConsumer.ValidationStage stage, final Message[] errors, final Message[] warnings)
         {
             System.out.printf("Finish [%s] %d error(s) encountered, %d warning(s).\n", stage.name(), errors.length, warnings.length);
-            showMessages(System.err, stage, "E", errors);
-            showMessages(System.out, stage, "W", warnings);
+            showMessages(System.err, stage, " ERROR", errors);
+            showMessages(System.out, stage, "  WARN", warnings);
+
+            boolean first = true;
+            for(Exhibit53WorksheetConsumer.ValidationStage unhandledStage : Exhibit53WorksheetConsumer.ValidationStage.values())
+            {
+                if(unhandledStage.ordinal() > stage.ordinal() && unhandledStage.ordinal() != Exhibit53WorksheetConsumer.ValidationStage.FINAL.ordinal())
+                {
+                    if(first)
+                    {
+                        System.out.printf("Validation incomplete. The following validations were not performed due to errors:\n");
+                        first = false;
+                    }
+
+                    System.out.printf(" * [%s] %s.\n", unhandledStage.name(), unhandledStage.getDescription());
+                }
+            }
         }
 
         public void completeFinalStage(final Exhibit53Parameters parameters, final Exhibit53WorksheetTemplate.Exhibit53 exhibit53)
@@ -96,10 +121,10 @@ public class Exhibit53Validator
         {
             for(final Message m : messages)
             {
-                stream.printf("{%s} [%s] %s\n", type, m.getCode(), m.getMessage());
+                stream.printf("%s [%s] %s\n", type, m.getCode(), m.getMessage());
                 if(m instanceof RowValidationMessage)
                     for(final Message cm : ((RowValidationMessage) m).getCellValidationErrors())
-                        stream.printf("     [%s] %s\n", cm.getCode(), cm.getMessage());
+                        stream.printf("       [%s] %s\n", cm.getCode(), cm.getMessage());
             }
         }
     }

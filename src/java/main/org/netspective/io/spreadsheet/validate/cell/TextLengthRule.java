@@ -54,7 +54,7 @@ public class TextLengthRule implements CellValidationRule
                     if(value.length() >= minLength && value.length() <= maxLength)
                         continue;
 
-                    messages.add(new DefaultCellValidationMessage(table, row, cell, messageCode, invalidMessageFormatSpec, vc.getValidationMessageCellLocator(cell, false), value, minLength, maxLength));
+                    messages.add(new DefaultCellValidationMessage(table, row, cell, messageCode, invalidMessageFormatSpec, vc.getValidationMessageCellLocator(cell, false), value, value.length(), minLength, maxLength));
                     errors++;
                 }
                 return errors == 0;
@@ -65,18 +65,18 @@ public class TextLengthRule implements CellValidationRule
                 if(value.length() >= minLength && value.length() <= maxLength)
                     return true;
 
-                messages.add(new DefaultCellValidationMessage(table, row, cell, messageCode, invalidMessageFormatSpec, vc.getValidationMessageCellLocator(cell, false), value, minLength, maxLength));
+                messages.add(new DefaultCellValidationMessage(table, row, cell, messageCode, invalidMessageFormatSpec, vc.getValidationMessageCellLocator(cell, false), value, value.length(), minLength, maxLength));
                 return false;
             }
             else
             {
-                messages.add(new DefaultCellValidationMessage(table, row, cell, messageCode, invalidMessageFormatSpec, vc.getValidationMessageCellLocator(cell, false), object.toString() + " (" + object.getClass().getName() + ')', minLength, maxLength));
+                messages.add(new DefaultCellValidationMessage(table, row, cell, messageCode, invalidMessageFormatSpec, vc.getValidationMessageCellLocator(cell, false), object.toString() + " (" + object.getClass().getName() + ')', -1, minLength, maxLength));
                 return false;
             }
         }
         else
         {
-            messages.add(new DefaultCellValidationMessage(table, row, cell, messageCode, invalidMessageFormatSpec, vc.getValidationMessageCellLocator(cell, false), unassignableTextValue, minLength, maxLength));
+            messages.add(new DefaultCellValidationMessage(table, row, cell, messageCode, invalidMessageFormatSpec, vc.getValidationMessageCellLocator(cell, false), unassignableTextValue, -1, minLength, maxLength));
             return false;
         }
     }

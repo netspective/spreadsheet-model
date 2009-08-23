@@ -34,13 +34,15 @@
         </jar>
     </target>
 
-    <target name="validator" depends="jar">
+    <target name="create-validator-single-jar-package" depends="jar">
         <delete dir="${module.build.deploy.main.home}"/>
         <mkdir dir="${module.build.deploy.main.home}"/>
         <unjar src="${module.jar.home}/${module.jar.name}" dest="${module.build.deploy.main.home}"/>
         <unjar src="${module.lib.home}/runtime/commons-cli-1.2.jar" dest="${module.build.deploy.main.home}"/>
         <unjar src="${module.lib.home}/runtime/poi-3.5-beta6-20090622.jar" dest="${module.build.deploy.main.home}"/>
         <unjar src="${module.lib.home}/runtime/poi-ooxml-3.5-beta6-20090622.jar" dest="${module.build.deploy.main.home}"/>
+        <unjar src="${module.lib.home}/runtime/commons-beanutils-core-1.8.0.jar" dest="${module.build.deploy.main.home}"/>
+        <unjar src="${module.lib.home}/runtime/commons-logging-1.1.1.jar" dest="${module.build.deploy.main.home}"/>
         <jar destfile="${module.jar.home}/ex53-validator.jar" basedir="${module.build.deploy.main.home}">
             <manifest>
                 <attribute name="Main-Class" value="gov.omb.io.a11.exhibit.ex53.Exhibit53Validator"/>
