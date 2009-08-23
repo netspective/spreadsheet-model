@@ -76,10 +76,10 @@ public class FlatSimpleWorksheetTemplate implements WorksheetTemplate, Validatio
             columnsMapByIndex.put(column.getColumnIndex(), column);
 
         if(groupingTest)
-            templateValidationRules.add(new ValidateColumnGroupNamesRule());
-        templateValidationRules.add(new ValidateColumnHeadingsRule());
+            templateValidationRules.add(new ValidateColumnGroupNamesRule("INVALID_COL_GROUP"));
+        templateValidationRules.add(new ValidateColumnHeadingsRule("INVALID_COL_HEADING"));
 
-        rowValidationRules.add(new ValidateColumnData());
+        rowValidationRules.add(new ValidateColumnData("INVALID_COLUMN"));
     }
 
     public List<Column> getColumns()

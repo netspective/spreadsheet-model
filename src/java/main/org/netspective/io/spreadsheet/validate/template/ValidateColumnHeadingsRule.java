@@ -8,6 +8,13 @@ import java.util.List;
 
 public class ValidateColumnHeadingsRule implements TemplateValidationRule
 {
+    private final String messageCode;
+
+    public ValidateColumnHeadingsRule(final String messageCode)
+    {
+        this.messageCode = messageCode;
+    }
+
     public boolean isFailureFatal()
     {
         return true;
@@ -28,7 +35,7 @@ public class ValidateColumnHeadingsRule implements TemplateValidationRule
                     {
                         messages.add(new TemplateValidationMessage()
                         {
-                            public String getCode() { return ValidateColumnHeadingsRule.class.getName(); }
+                            public String getCode() { return messageCode; }
                             public String getMessage()
                             {
                                 return String.format("'%s' expected in column %s (# %d) on row %d. Found '%s' instead.",
@@ -48,7 +55,7 @@ public class ValidateColumnHeadingsRule implements TemplateValidationRule
                 {
                     messages.add(new TemplateValidationMessage()
                     {
-                        public String getCode() { return ValidateColumnHeadingsRule.class.getName(); }
+                        public String getCode() { return messageCode; }
                         public boolean isException() { return true; }
                         public Exception getException() { return e; }
                         public String getMessage()

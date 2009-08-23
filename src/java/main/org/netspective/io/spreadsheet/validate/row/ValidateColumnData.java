@@ -13,6 +13,13 @@ import java.util.List;
 
 public class ValidateColumnData implements RowValidationRule
 {
+    private final String messageCode;
+
+    public ValidateColumnData(final String messageCode)
+    {
+        this.messageCode = messageCode;
+    }
+
     public boolean isValid(final ValidationContext vc, final Table table, final TableRow row,
                            final List<RowValidationMessage> messages)
     {
@@ -49,7 +56,7 @@ public class ValidateColumnData implements RowValidationRule
 
                 public String getCode()
                 {
-                    return ValidateColumnData.class.getName();
+                    return messageCode;
                 }
 
                 public String getMessage()

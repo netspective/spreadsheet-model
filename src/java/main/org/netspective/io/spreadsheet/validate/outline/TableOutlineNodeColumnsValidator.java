@@ -16,10 +16,12 @@ import java.util.Map;
 
 public class TableOutlineNodeColumnsValidator
 {
+    private final String messageCode;
     private final Map<Column, CellValidationRule[]> cellValidationRules;
 
-    public TableOutlineNodeColumnsValidator(final Map<Column, CellValidationRule[]> cellValidationRules)
+    public TableOutlineNodeColumnsValidator(final String messageCode, final Map<Column, CellValidationRule[]> cellValidationRules)
     {
+        this.messageCode = messageCode;
         this.cellValidationRules = cellValidationRules;
     }
 
@@ -77,7 +79,7 @@ public class TableOutlineNodeColumnsValidator
 
                 public String getCode()
                 {
-                    return TableOutlineNodeColumnsValidator.class.getName();
+                    return messageCode;
                 }
 
                 public String getMessage()

@@ -8,6 +8,13 @@ import java.util.List;
 
 public class ValidateColumnGroupNamesRule implements TemplateValidationRule
 {
+    private final String messageCode;
+
+    public ValidateColumnGroupNamesRule(final String messageCode)
+    {
+        this.messageCode = messageCode;
+    }
+
     public boolean isFailureFatal()
     {
         return true;
@@ -31,7 +38,7 @@ public class ValidateColumnGroupNamesRule implements TemplateValidationRule
                     {
                         messages.add(new TemplateValidationMessage()
                         {
-                            public String getCode() { return ValidateColumnGroupNamesRule.class.getName(); }
+                            public String getCode() { return messageCode; }
                             public boolean isException() { return false; }
                             public Exception getException() { return null; }
                             public String getMessage()
@@ -52,7 +59,7 @@ public class ValidateColumnGroupNamesRule implements TemplateValidationRule
                 {
                     messages.add(new TemplateValidationMessage()
                     {
-                        public String getCode() { return ValidateColumnGroupNamesRule.class.getName(); }
+                        public String getCode() { return messageCode; }
                         public boolean isException() { return true; }
                         public Exception getException() { return e; }
                         public String getMessage()

@@ -59,8 +59,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
 {
     public static final int DOLLAR_VALUE_BIG_DECIMAL_SCALE = 6;
 
-    private final int budgetYear;
-    private final String agencyCode;
+    private final Exhibit53Parameters parameters;
     private final List<ColumnGroup> columnGroups = new ArrayList<ColumnGroup>();
     private final List<Column> columns = new ArrayList<Column>();
     private final Map<Integer, Column> columnsMapByIndex = new HashMap<Integer, Column>();
@@ -93,20 +92,19 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
         }
     }
 
-    public Exhibit53WorksheetTemplate(final int budgetYear, final String agencyCode, final List<String> bureauCodes)
+    public Exhibit53WorksheetTemplate(final Exhibit53Parameters parameters)
     {
+        this.parameters = parameters;
+
         final StringValueHandler stringValueHandler = new StringValueHandler();
         final BigDecimalValueHandler dollarValueHandler = new BigDecimalValueHandler(DOLLAR_VALUE_BIG_DECIMAL_SCALE);
         final DoubleValueHandler doubleValueHandler = new DoubleValueHandler();
         final IntegerArrayValueHandler intArrayValueHandler = new IntegerArrayValueHandler(new StringArrayValueHandler(stringValueHandler, ","));
 
-        this.budgetYear = budgetYear;
-        this.agencyCode = agencyCode;
-
         final int groupNamesRowNumber = 7;
         final int columnHeadingsRowNumber = 8;
 
-        final UpiRule upiRule = new UpiRule(MessageCodeFactory.UPI_INVALID, budgetYear, agencyCode, bureauCodes);
+        final UpiRule upiRule = new UpiRule(MessageCodeFactory.UPI_INVALID, parameters.getBudgetYear(), parameters.getAgencyCode(), parameters.getBureauCodes());
 
         CellValidationRule[] columnValidations = new CellValidationRule[] { upiRule };
         columns.add(new DefaultColumn(stringValueHandler, groupNamesRowNumber, columnHeadingsRowNumber, 2, "2010 UPI (17-digits required for all legacy investments)", columnValidations));
@@ -163,9 +161,9 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
         for(final Column column : columns)
             columnsMapByIndex.put(column.getColumnIndex(), column);
 
-        templateValidationRules.add(new ValidateColumnGroupNamesRule());
-        templateValidationRules.add(new ValidateColumnHeadingsRule());
-        rowValidationRules.add(new ValidateColumnData());
+        templateValidationRules.add(new ValidateColumnGroupNamesRule(MessageCodeFactory.TEMPLATE_INVALID_COLUMN_GROUP_NAME));
+        templateValidationRules.add(new ValidateColumnHeadingsRule(MessageCodeFactory.TEMPLATE_INVALID_COLUMN_HEADING));
+        rowValidationRules.add(new ValidateColumnData(MessageCodeFactory.TEMPLATE_INVALID_COLUMN));
 
         rowCaches.add(portfolioSectionsCache);
     }
@@ -421,7 +419,8 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
             if(portfolioRow == null)
                 return;
 
-            rootNodes.add(new Portfolio(portfolioRow));
+            final Portfolio portfolio = new Portfolio(portfolioRow);
+            rootNodes.add(portfolio);
         }
 
         public Table getTable()
@@ -432,6 +431,25 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
         public List<TableOutlineNode> getRootNodes()
         {
             return rootNodes;
+        }
+
+        public boolean isValid(final ValidationContext vc, final List<NodeValidationMessage> messages)
+        {
+            int errors = 0;
+             for(final TableOutlineNode child : getRootNodes())
+                 errors += child.isValid(vc, messages) ? 0 : 1;
+
+             if(parameters.isValidateAnySubtotals() && parameters.isValidatePortfolioTotals())
+             {
+                 final TableOutlineNode portfolio = rootNodes.get(0);
+                 final ColumnSubtotalsValidator csv = new ColumnSubtotalsValidator(
+                         MessageCodeFactory.PORTFOLIO_ROW_SUBTOTAL_INVALID,
+                         MessageCodeFactory.PORTFOLIO_ROW_COLUMN_SUBTOTAL_INVALID,
+                         Exhibit53.this, invAmtsRollupColumns, portfolio.getChildren(), portfolio);
+                 errors += csv.isValid(vc, messages) ? 1 : 0;
+             }
+
+             return errors == 0;
         }
 
         public abstract class InvestmentLine implements TableOutlineNode
@@ -466,7 +484,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                 {
                     final TableRow investmentDataRow = allTableRows.get(rowIndex);
                     final String upiText = (String) investmentDataRow.findCellForColumn(activeUPIColumn).getValue("");
-                    final UPI upi = DataFormatFactory.getInstance().createUPI(budgetYear, upiText, agencyCode);
+                    final UPI upi = DataFormatFactory.getInstance().createUPI(parameters.getBudgetYear(), upiText, parameters.getAgencyCode());
 
                     if(upi.isFundingSourceLine())
                         lines.add(new FundingSource(investmentDataRow, rowIndex, rowIndex));
@@ -489,7 +507,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                 cellValidationRules.put(finSystemPctColumn, new CellValidationRule[] { new PercentageRule(MessageCodeFactory.FINPCT_INVALID) });
                 cellValidationRules.put(segArchColumn, new CellValidationRule[] { segArchRule });
 
-                columnsValidator = new TableOutlineNodeColumnsValidator(cellValidationRules);
+                columnsValidator = new TableOutlineNodeColumnsValidator(MessageCodeFactory.INVESTMENT_COLUMN_INVALID, cellValidationRules);
             }
 
             public boolean isValid(final ValidationContext vc, final List<NodeValidationMessage> messages)
@@ -514,33 +532,34 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                 for(final TableOutlineNode child : getChildren())
                     errors += child.isValid(vc, messages) ? 0 : 1;
 
-                final List<TableOutlineNode> nodesToCompare = new ArrayList<TableOutlineNode>();
-                for(final TableOutlineNode line : getChildren())
-                    if(line instanceof Subtotal) nodesToCompare.add(line);
-                if(nodesToCompare.size() > 0)
+                if(parameters.isValidateAnySubtotals() && parameters.isValidateInvestmentLineSubtotalWithFundingSourceSubtotals())
                 {
-                    final ColumnSubtotalsValidator csv = new ColumnSubtotalsValidator(
-                            MessageCodeFactory.INVESTMENT_ROW_SUBTOTAL_INVALID,
-                            MessageCodeFactory.INVESTMENT_ROW_COLUMN_SUBTOTAL_INVALID,
-                            Exhibit53.this, invAmtsRollupColumns, nodesToCompare, this);
-                    errors += csv.isValid(vc, messages) ? 1 : 0;
-                }
-                else
-                {
-                    messages.add(new NodeValidationMessage()
+                    final List<TableOutlineNode> nodesToCompare = new ArrayList<TableOutlineNode>();
+                    for(final TableOutlineNode line : getChildren())
+                        if(line instanceof Subtotal) nodesToCompare.add(line);
+                    if(nodesToCompare.size() > 0)
                     {
-                        public TableOutline getOutline() { return Exhibit53.this; }
-                        public TableOutlineNode getNode() { return Investment.this; }
-                        public TableRow getRow() { return Investment.this.getTableRow(); }
-                        public CellValidationMessage[] getCellValidationErrors() { return new CellValidationMessage[0]; }
-                        public String getCode() { return MessageCodeFactory.INVESTMENT_NO_FUNDSRC_SUBTOTALS; }
-                        public String getMessage() { return String.format("Invesment lines for row %d should have funding sources subtotals.", getRow().getRowNumberInSheet()); }
-                    });
-                    return false;
+                        final ColumnSubtotalsValidator csv = new ColumnSubtotalsValidator(
+                                MessageCodeFactory.INVESTMENT_ROW_SUBTOTAL_INVALID,
+                                MessageCodeFactory.INVESTMENT_ROW_COLUMN_SUBTOTAL_INVALID,
+                                Exhibit53.this, invAmtsRollupColumns, nodesToCompare, this);
+                        errors += csv.isValid(vc, messages) ? 1 : 0;
+                    }
+                    else
+                    {
+                        messages.add(new NodeValidationMessage()
+                        {
+                            public TableOutline getOutline() { return Exhibit53.this; }
+                            public TableOutlineNode getNode() { return Investment.this; }
+                            public TableRow getRow() { return Investment.this.getTableRow(); }
+                            public CellValidationMessage[] getCellValidationErrors() { return new CellValidationMessage[0]; }
+                            public String getCode() { return MessageCodeFactory.INVESTMENT_NO_FUNDSRC_SUBTOTALS; }
+                            public String getMessage() { return String.format("Invesment lines for row %d should have funding sources subtotals.", getRow().getRowNumberInSheet()); }
+                        });
+                        return false;
 
+                    }
                 }
-
-
                 return errors == 0;
             }
 
@@ -557,16 +576,21 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                 {
                     super(tableRow, firstDataRowIndexInTable, lastDataRowIndexInTable);
 
-                    final TextRegExRule budgetAccountRule = new TextRegExRule(MessageCodeFactory.TITLE_INVALID_FUNDING_SRC_BUDGET_ACCOUNT, "^[0-9]{3}-[0-9]{2}-[0-9]{4}-[0-9]$", "Invalid budget account in funding source at %s. It should look like 000-00-0000-0.");
-                    final Map<Column, CellValidationRule[]> cellValidationRules = new HashMap<Column, CellValidationRule[]>();
-                    cellValidationRules.put(investmentTitleColumn, new CellValidationRule[] { budgetAccountRule });
-                    columnsValidator = new TableOutlineNodeColumnsValidator(cellValidationRules);
+                    if(parameters.isValidateBudgetAccountsCodesInFundingSources())
+                    {
+                        final TextRegExRule budgetAccountRule = new TextRegExRule(MessageCodeFactory.TITLE_INVALID_FUNDING_SRC_BUDGET_ACCOUNT, "^[0-9]{3}-[0-9]{2}-[0-9]{4}-[0-9]$", "Invalid budget account '%2$s' in funding source at %1$s. It should look like 000-00-0000-0.");
+                        final Map<Column, CellValidationRule[]> cellValidationRules = new HashMap<Column, CellValidationRule[]>();
+                        cellValidationRules.put(investmentTitleColumn, new CellValidationRule[] { budgetAccountRule });
+                        columnsValidator = new TableOutlineNodeColumnsValidator(MessageCodeFactory.FUNDSRC_ROW_COLUMN_INVALID, cellValidationRules);
+                    }
+                    else
+                        columnsValidator = null;
                 }
 
                 public boolean isValid(final ValidationContext vc,
                                        final List<NodeValidationMessage> messages)
                 {
-                    return columnsValidator.isValid(vc, Exhibit53.this, this, messages);
+                    return columnsValidator != null ? columnsValidator.isValid(vc, Exhibit53.this, this, messages) : true;
                 }
 
                 public List<TableOutlineNode> getChildren() { return new ArrayList<TableOutlineNode>(); }
@@ -581,6 +605,9 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
 
                 public boolean isValid(final ValidationContext vc, final List<NodeValidationMessage> messages)
                 {
+                    if(! (parameters.isValidateAnySubtotals() && parameters.isValidateFundingSourceSubtotals()))
+                        return true;
+
                     final List<TableOutlineNode> nodesToCompare = new ArrayList<TableOutlineNode>();
                     for(final TableOutlineNode line : Investment.this.getChildren())
                         if(line != this) nodesToCompare.add(line);
@@ -624,7 +651,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                 {
                     final TableRow investmentDataRow = allTableRows.get(rowIndex);
                     final String upiText = (String) investmentDataRow.findCellForColumn(activeUPIColumn).getValue("");
-                    final UPI upi = DataFormatFactory.getInstance().createUPI(budgetYear, upiText, agencyCode);
+                    final UPI upi = DataFormatFactory.getInstance().createUPI(parameters.getBudgetYear(), upiText, parameters.getAgencyCode());
 
                     if(! upi.isValid())
                     {
@@ -695,6 +722,16 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                 int errors = 0;
                 for(final TableOutlineNode child : getChildren())
                     errors += child.isValid(vc, messages) ? 0 : 1;
+
+                if(parameters.isValidateAnySubtotals() && parameters.isValidateInvestmentsGroupSubtotals())
+                {
+                    final ColumnSubtotalsValidator csv = new ColumnSubtotalsValidator(
+                            MessageCodeFactory.INVESTMENTS_ROW_SUBTOTAL_INVALID,
+                            MessageCodeFactory.INVESTMENTS_ROW_COLUMN_SUBTOTAL_INVALID,
+                            Exhibit53.this, invAmtsRollupColumns, getChildren(), this);
+                    errors += csv.isValid(vc, messages) ? 1 : 0;
+                }
+
                 return errors == 0;
             }
 
@@ -729,7 +766,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                 {
                     final TableRow sectionDataRow = allTableRows.get(rowIndex);
                     final String upiText = (String) sectionDataRow.findCellForColumn(activeUPIColumn).getValue("");
-                    final UPI upi = DataFormatFactory.getInstance().createUPI(budgetYear, upiText, agencyCode);
+                    final UPI upi = DataFormatFactory.getInstance().createUPI(parameters.getBudgetYear(), upiText, parameters.getAgencyCode());
 
                     if(! upi.isValid())
                     {
@@ -778,6 +815,16 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                 int errors = 0;
                 for(final TableOutlineNode child : getChildren())
                     errors += child.isValid(vc, messages) ? 0 : 1;
+
+                if(parameters.isValidateAnySubtotals() && parameters.isValidateMissionAreaSubtotals())
+                {
+                    final ColumnSubtotalsValidator csv = new ColumnSubtotalsValidator(
+                            MessageCodeFactory.MISSAREA_ROW_SUBTOTAL_INVALID,
+                            MessageCodeFactory.MISSAREA_ROW_COLUMN_SUBTOTAL_INVALID,
+                            Exhibit53.this, invAmtsRollupColumns, getChildren(), this);
+                    errors += csv.isValid(vc, messages) ? 1 : 0;
+                }
+
                 return errors == 0;
             }
         }
@@ -843,6 +890,16 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                 int errors = 0;
                 for(final TableOutlineNode child : getChildren())
                     errors += child.isValid(vc, messages) ? 0 : 1;
+
+                if(parameters.isValidateAnySubtotals() && parameters.isValidatePartSubtotals())
+                {
+                    final ColumnSubtotalsValidator csv = new ColumnSubtotalsValidator(
+                            MessageCodeFactory.PART_ROW_SUBTOTAL_INVALID,
+                            MessageCodeFactory.PART_ROW_COLUMN_SUBTOTAL_INVALID,
+                            Exhibit53.this, invAmtsRollupColumns, getChildren(), this);
+                    errors += csv.isValid(vc, messages) ? 1 : 0;
+                }
+
                 return errors == 0;
             }
         }

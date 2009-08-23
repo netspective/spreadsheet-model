@@ -7,7 +7,6 @@ import org.netspective.io.spreadsheet.model.Table;
 import org.netspective.io.spreadsheet.model.TableRow;
 import org.netspective.io.spreadsheet.outline.TableOutline;
 import org.netspective.io.spreadsheet.outline.TableOutlineCreator;
-import org.netspective.io.spreadsheet.outline.TableOutlineNode;
 import org.netspective.io.spreadsheet.template.WorksheetTemplate;
 import org.netspective.io.spreadsheet.validate.ValidationContext;
 import org.netspective.io.spreadsheet.validate.outline.NodeValidationMessage;
@@ -245,8 +244,7 @@ public class WorksheetConsumer
         final ValidationContext vc = worksheetTemplate.createValidationContext();
         final List<NodeValidationMessage> nodeMessages = new ArrayList<NodeValidationMessage>();
 
-        for(final TableOutlineNode node : outline.getRootNodes())
-            node.isValid(vc, nodeMessages);
+        outline.isValid(vc, nodeMessages);
 
         final List<NodeValidationMessage> nodeErrors = new ArrayList<NodeValidationMessage>();
         final List<NodeValidationMessage> nodeWarnings = new ArrayList<NodeValidationMessage>();

@@ -67,6 +67,10 @@ public class Exhibit53Validator
                                        .isRequired()
                                        .create('y'));
 
+        options.addOption(OptionBuilder.withLongOpt("no-validate-subtotals")
+                                       .withDescription("Set this flag to skill all subtotals calculation validations.")
+                                       .create('d'));
+
         options.addOption(OptionBuilder.withLongOpt("debug")
                                        .withDescription("Show debugging messages.")
                                        .create('d'));
@@ -133,7 +137,11 @@ public class Exhibit53Validator
                 else
                     bureauCodesList = null;
 
-                final Exhibit53WorksheetTemplate template = new Exhibit53WorksheetTemplate(Integer.parseInt(budgetYear), agencyCode, bureauCodesList);
+                final DefaultExhibit53Parameters parameters = new DefaultExhibit53Parameters(Integer.parseInt(budgetYear), agencyCode, bureauCodesList);
+                if(commandLine.hasOption("no-validate-subtotals"))
+                    parameters.setValidateAnySubtotals(false);
+
+                final Exhibit53WorksheetTemplate template = new Exhibit53WorksheetTemplate(parameters);
                 final WorksheetDataHandler exhibit53DataHandler = new DefaultWorksheetDataHandler(9, 2, 17, new int[] { 2, 3 });
 
                 System.out.printf("Validating File: \"%s\".\n", workBookFile.getAbsoluteFile());
@@ -203,7 +211,7 @@ public class Exhibit53Validator
     {
         for(final Message m : messages)
         {
-            stream.printf("{%s} %s\n", type, m.getMessage());
+            stream.printf("{%s} [%s] %s\n", type, m.getCode(), m.getMessage());
             if(m instanceof RowValidationMessage)
                 for(final Message cm : ((RowValidationMessage) m).getCellValidationErrors())
                     stream.printf("     [%s] %s\n", cm.getCode(), cm.getMessage());
