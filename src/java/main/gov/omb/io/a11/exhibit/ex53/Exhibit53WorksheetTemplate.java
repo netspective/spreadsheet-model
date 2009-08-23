@@ -376,7 +376,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                 if(difference.abs().compareTo(zero) > 0)
                 {
                     cellMessages.add(new DefaultCellValidationMessage(outline.getTable(), compareTo.getTableRow(), cell, cellMessageCode,
-                            "In %s the subtotal computed %3.6f doesn't match the provided subtotal %3.6f for rows %s. The difference of given minus computed is is %3.6e.",
+                            "In %s the subtotal computed %3.6f doesn't match the provided subtotal %3.6f for rows %s. The difference of given minus computed is is %3.6f.",
                             vc.getValidationMessageCellLocator(cell, false), subtotalComputed,
                             subtotalGiven, rowsSummed, difference));
                 }
@@ -391,7 +391,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                     public TableRow getRow() { return compareTo.getTableRow(); }
                     public CellValidationMessage[] getCellValidationErrors() { return cellMessages.toArray(new CellValidationMessage[cellMessages.size()]); }
                     public String getCode() { return nodeMessageCode; }
-                    public String getMessage() { return String.format("Invesment lines for row %d do not sum properly in the funding source subtotal.", getRow().getRowNumberInSheet()); }
+                    public String getMessage() { return String.format("Values for row %d (\"%s\") do not sum properly.", getRow().getRowNumberInSheet(), getRow().findCellForColumn(investmentTitleColumn).getValue()); }
                 });
                 return false;
             }
@@ -513,6 +513,33 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
 
                 for(final TableOutlineNode child : getChildren())
                     errors += child.isValid(vc, messages) ? 0 : 1;
+
+                final List<TableOutlineNode> nodesToCompare = new ArrayList<TableOutlineNode>();
+                for(final TableOutlineNode line : getChildren())
+                    if(line instanceof Subtotal) nodesToCompare.add(line);
+                if(nodesToCompare.size() > 0)
+                {
+                    final ColumnSubtotalsValidator csv = new ColumnSubtotalsValidator(
+                            MessageCodeFactory.INVESTMENT_ROW_SUBTOTAL_INVALID,
+                            MessageCodeFactory.INVESTMENT_ROW_COLUMN_SUBTOTAL_INVALID,
+                            Exhibit53.this, invAmtsRollupColumns, nodesToCompare, this);
+                    errors += csv.isValid(vc, messages) ? 1 : 0;
+                }
+                else
+                {
+                    messages.add(new NodeValidationMessage()
+                    {
+                        public TableOutline getOutline() { return Exhibit53.this; }
+                        public TableOutlineNode getNode() { return Investment.this; }
+                        public TableRow getRow() { return Investment.this.getTableRow(); }
+                        public CellValidationMessage[] getCellValidationErrors() { return new CellValidationMessage[0]; }
+                        public String getCode() { return MessageCodeFactory.INVESTMENT_NO_FUNDSRC_SUBTOTALS; }
+                        public String getMessage() { return String.format("Invesment lines for row %d should have funding sources subtotals.", getRow().getRowNumberInSheet()); }
+                    });
+                    return false;
+
+                }
+
 
                 return errors == 0;
             }
@@ -734,7 +761,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                         final boolean isLast = i == missionAreaRows.size() - 1;
                         final TableRow missionAreaStartRow = missionAreaRows.get(i);
                         final int investmentFirstDataRowIndex = allTableRows.indexOf(missionAreaStartRow) + 1;
-                        final int investmentLastDataRowIndex = (isLast ? lastDataRowIndexInPart : allTableRows.indexOf(missionAreaRows.get(i+1))) - 1;
+                        final int investmentLastDataRowIndex = (isLast ? lastDataRowIndexInPart : allTableRows.indexOf(missionAreaRows.get(i+1))-1);
                         missionAreas.add(new Investments(missionAreaStartRow, partId, missionAreaIds.get(i), investmentFirstDataRowIndex, investmentLastDataRowIndex));
                     }
                 }

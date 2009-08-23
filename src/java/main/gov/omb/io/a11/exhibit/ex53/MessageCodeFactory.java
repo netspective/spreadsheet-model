@@ -11,6 +11,9 @@ public class MessageCodeFactory
     public static final String UPI_INV_ID_DUPLICATED = "E-UPI-0006";
 
     public static final String INVESTMENT_NO_CHILDREN = "E-INV-0000";
+    public static final String INVESTMENT_NO_FUNDSRC_SUBTOTALS = "E-INV-0001";
+    public static final String INVESTMENT_ROW_SUBTOTAL_INVALID = "E-INV-0002";
+    public static final String INVESTMENT_ROW_COLUMN_SUBTOTAL_INVALID = "E-INV-0003";
 
     public static final String TITLE_REQUIRED  = "E-TITLE-0001";
     public static final String TITLE_LENGTH    = "E-TITLE-0002";
