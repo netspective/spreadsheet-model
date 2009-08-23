@@ -590,7 +590,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                 public boolean isValid(final ValidationContext vc,
                                        final List<NodeValidationMessage> messages)
                 {
-                    return columnsValidator != null ? columnsValidator.isValid(vc, Exhibit53.this, this, messages) : true;
+                    return columnsValidator == null || columnsValidator.isValid(vc, Exhibit53.this, this, messages);
                 }
 
                 public List<TableOutlineNode> getChildren() { return new ArrayList<TableOutlineNode>(); }
