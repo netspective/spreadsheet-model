@@ -61,7 +61,8 @@ public class ValidateColumnData implements RowValidationRule
 
                 public String getMessage()
                 {
-                    return vc.getValidationMessageRowSummary(row, validationMessages);
+                    // null means that we won't report this message, only the children through getCellValidationErrors
+                    return null;
                 }
 
                 @Override

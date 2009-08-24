@@ -25,6 +25,12 @@
         <javac srcdir="${module.src.main.home}" destdir="${module.build.classes.main.home}" target="1.5">
             <classpath refid="module.classpath.runtime"/>
         </javac>
+        <copy todir="${module.build.classes.main.home}">
+            <fileset dir="${module.src.main.home}">
+                <include name="**/*.xls"/>
+                <include name="**/*.xml"/>
+            </fileset>
+        </copy>
     </target>
 
     <target name="jar" depends="compile">

@@ -27,6 +27,7 @@ import org.netspective.io.spreadsheet.validate.cell.DataRequiredRule;
 import org.netspective.io.spreadsheet.validate.cell.DefaultCellValidationMessage;
 import org.netspective.io.spreadsheet.validate.cell.IntegerEnumerationRule;
 import org.netspective.io.spreadsheet.validate.cell.NumericRangeRule;
+import org.netspective.io.spreadsheet.validate.cell.TextEnumerationRule;
 import org.netspective.io.spreadsheet.validate.cell.TextLengthRule;
 import org.netspective.io.spreadsheet.validate.cell.TextRegExRule;
 import org.netspective.io.spreadsheet.validate.outline.DefaultOutlineValidationMessage;
@@ -73,9 +74,11 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
     private final Column activeUPIColumn;
     private final Column investmentTitleColumn;
     private final Column descrColumn;
-    private final DefaultColumn homelandSecurityPrioritiesColumn;
-    private final DefaultColumn finSystemPctColumn;
-    private final DefaultColumn segArchColumn;
+    private final Column homelandSecurityPrioritiesColumn;
+    private final Column finSystemPctColumn;
+    private final Column segArchColumn;
+    private final Column feaLobColumn;
+    private final Column feaSubFColumn;
     private final List<Column> invAmtsRollupColumns;
 
     public class PercentageRule implements CellValidationRule
@@ -125,8 +128,10 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
 
         final ColumnGroup primaryFEAMapping = new DefaultColumnGroup(groupNamesRowNumber, "Primary FEA Mapping (BRM)", 6, 7);
         columnGroups.add(primaryFEAMapping);
-        columns.add(new DefaultColumn(stringValueHandler, groupNamesRowNumber, columnHeadingsRowNumber, 6, "Line of Business (3 digit code)", primaryFEAMapping));
-        columns.add(new DefaultColumn(stringValueHandler, groupNamesRowNumber, columnHeadingsRowNumber, 7, "Sub-Function (3 digit code)", primaryFEAMapping));
+        feaLobColumn = new DefaultColumn(stringValueHandler, groupNamesRowNumber, columnHeadingsRowNumber, 6, "Line of Business (3 digit code)", primaryFEAMapping);
+        feaSubFColumn = new DefaultColumn(stringValueHandler, groupNamesRowNumber, columnHeadingsRowNumber, 7, "Sub-Function (3 digit code)", primaryFEAMapping);
+        columns.add(feaLobColumn);
+        columns.add(feaSubFColumn);
 
         finSystemPctColumn = new DefaultColumn(doubleValueHandler, groupNamesRowNumber, columnHeadingsRowNumber, 8, "Core Financial System (%)");
         columns.add(finSystemPctColumn);
@@ -244,7 +249,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
 
     public boolean isWarning(final Message message)
     {
-        return message.getCode().startsWith("W-");
+        return parameters.isWarning(message, message.getCode().startsWith("W-"));
     }
 
     public class PortfolioSectionsCache implements TableRowCache
@@ -375,7 +380,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                 if(difference.abs().compareTo(zero) > 0)
                 {
                     cellMessages.add(new DefaultCellValidationMessage(outline.getTable(), compareTo.getTableRow(), cell, cellMessageCode,
-                            "In %s the subtotal computed %3.6f doesn't match the provided subtotal %3.6f for rows %s. The difference of given minus computed is is %3.6f.",
+                            "In %s the subtotal computed %3.6f doesn't match the provided subtotal %3.6f for rows %s. The difference of given minus computed is %3.6f.",
                             vc.getValidationMessageCellLocator(cell, false), subtotalComputed,
                             subtotalGiven, rowsSummed, difference));
                 }
@@ -497,8 +502,8 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                     }
                 }
 
-                final TextRegExRule descrTruncatedRule = new TextRegExRule(MessageCodeFactory.DESCR_TRUNCATED, ".+[\\.\\,\\!\\?\\(\\)\\{\\}\\[\\]\\<\\>\\'\\\"]$", "An investment description value seems to be truncated at %s. Please ensure that it is properly summarized, and not simply truncated (should end with proper sentence punctuation like with the following valid characters: . , ! ? ( ) { } [ ] < > ' \").");
-                final TextRegExRule segArchRule = new TextRegExRule(MessageCodeFactory.SEG_ARCH_INVALID_CODE, "^[0-9]{3}-[0-9]{3}$", "Invalid segement architecture code '%2$s' at %1$s. It should look like 000-000.");
+                final TextRegExRule descrTruncatedRule = new TextRegExRule(MessageCodeFactory.DESCR_TRUNCATED, ".+[\\.\\!\\?\\(\\)\\{\\}\\[\\]\\<\\>\\'\\\"]$", "An investment description value seems to be truncated at %s. Please ensure that it is properly summarized, and not simply truncated (should end with proper sentence punctuation like with the following valid characters: . , ! ? ( ) { } [ ] < > ' \").");
+                final TextRegExRule segArchRule = new TextRegExRule(MessageCodeFactory.SEG_ARCH_INVALID_CODE, "^[0-9]{3}-[0]{3}$", "Invalid segement architecture code '%2$s' at %1$s. It should look like ###-000.");
                 final Set<Integer> validHSPriorities = new HashSet<Integer>();
                 for(int i = 1; i <= 6; i++) validHSPriorities.add(i);
 
@@ -506,7 +511,9 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                 cellValidationRules.put(descrColumn, new CellValidationRule[] { descrTruncatedRule });
                 cellValidationRules.put(homelandSecurityPrioritiesColumn, new CellValidationRule[] { new IntegerEnumerationRule(MessageCodeFactory.HS_INVALID_PRIORITY, validHSPriorities) });
                 cellValidationRules.put(finSystemPctColumn, new CellValidationRule[] { new PercentageRule(MessageCodeFactory.FINPCT_INVALID) });
-                cellValidationRules.put(segArchColumn, new CellValidationRule[] { segArchRule });
+                cellValidationRules.put(segArchColumn, new CellValidationRule[] { new DataRequiredRule(MessageCodeFactory.SEG_ARCH_REQUIRED, "Segment architecture code is required in %s."), segArchRule });
+                cellValidationRules.put(feaLobColumn, new CellValidationRule[] { new TextEnumerationRule(MessageCodeFactory.FEA_LOB_INVALID, FEACodesManager.getInstance().getLineOfBusinessOrServiceTypesCache().keySet() )});
+                cellValidationRules.put(feaSubFColumn, new CellValidationRule[] { new TextEnumerationRule(MessageCodeFactory.FEA_SUBF_INVALID, FEACodesManager.getInstance().getSubFunctionOrSvcComponentsCache().keySet() )});
 
                 columnsValidator = new TableOutlineNodeColumnsValidator(MessageCodeFactory.INVESTMENT_COLUMN_INVALID, cellValidationRules);
             }
@@ -525,7 +532,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                         public TableRow getRow() { return Investment.this.getTableRow(); }
                         public CellValidationMessage[] getCellValidationErrors() { return new CellValidationMessage[0]; }
                         public String getCode() { return MessageCodeFactory.INVESTMENT_NO_CHILDREN; }
-                        public String getMessage() { return String.format("Invesment lines for row %d should have funding sources and a subtotal.", getRow().getRowNumberInSheet()); }
+                        public String getMessage() { return String.format("Investment lines for row %d should have funding sources and a subtotal.", getRow().getRowNumberInSheet()); }
                     });
                     return false;
                 }

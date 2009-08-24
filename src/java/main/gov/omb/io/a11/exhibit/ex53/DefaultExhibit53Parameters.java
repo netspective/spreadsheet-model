@@ -7,14 +7,17 @@ import org.apache.commons.beanutils.WrapDynaBean;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.netspective.io.spreadsheet.message.Message;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class DefaultExhibit53Parameters implements Exhibit53Parameters
 {
@@ -32,6 +35,7 @@ public class DefaultExhibit53Parameters implements Exhibit53Parameters
             new ParameterImpl("budget-year", new ParameterArgumentImpl("year", ArgumentType.INT), true),
             new ParameterImpl("agency-code", new ParameterArgumentImpl("code", ArgumentType.STRING), true),
             new ParameterImpl("bureau-codes", new ParameterArgumentImpl("code,code", ArgumentType.STRING), false),
+            new ParameterImpl("errors-are-warnings", new ParameterArgumentImpl("code,code", ArgumentType.STRING), false),
             new ParameterImpl("debug", new ParameterArgumentImpl(), false),
             new ParameterImpl("dont-validate-any-subtotals", new ParameterArgumentImpl(), false),
             new ParameterImpl("dont-validate-funding-source-subtotals", new ParameterArgumentImpl(), false),
@@ -63,6 +67,7 @@ public class DefaultExhibit53Parameters implements Exhibit53Parameters
     private String workbookName;
     private String reportWorkbookName;
     private String worksheetName;
+    private String errorsAreWarnings;
     private boolean debug;
     private int budgetYear;
     private String agencyCode;
@@ -79,6 +84,7 @@ public class DefaultExhibit53Parameters implements Exhibit53Parameters
     private boolean validateBudgetAccountsCodesInFundingSources = true;
 
     private final List<String> errors = new ArrayList<String>();
+    private final Set<String> treatErrorsAsWarnings = new HashSet<String>();
     private Workbook workbook;
     private Sheet sheet;
 
@@ -216,6 +222,19 @@ public class DefaultExhibit53Parameters implements Exhibit53Parameters
         }
         else
             sheet = workbook.getSheetAt(0);
+    }
+
+    public void setErrorsAreWarnings(final String errorsAreWarnings)
+    {
+        this.errorsAreWarnings = errorsAreWarnings;
+        if(errorsAreWarnings != null)
+            treatErrorsAsWarnings.addAll(Arrays.asList(errorsAreWarnings.split(",")));
+    }
+
+    public boolean isWarning(final Message message, boolean defaultValue)
+    {
+        final boolean overridden = treatErrorsAsWarnings.contains(message.getCode());
+        return overridden ? true : defaultValue;
     }
 
     public Workbook getWorkbook()

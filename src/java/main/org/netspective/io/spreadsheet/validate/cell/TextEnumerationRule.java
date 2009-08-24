@@ -33,7 +33,10 @@ public class TextEnumerationRule implements CellValidationRule
 
         public String getInvalidValueErrorMessage(final String cellLocation, final String value)
         {
-            return String.format("Column value '%s' found in %s, expected one of %s.", cellLocation, value, validValues.toString());
+            if(validValues.size() < 10)
+                return String.format("Column value '%s' found in %s, expected one of %s.", value, cellLocation, validValues.toString());
+            else
+                return String.format("Column value '%s' found in %s, expected one of %d proper values.", value, cellLocation, validValues.size());
         }
     }
 

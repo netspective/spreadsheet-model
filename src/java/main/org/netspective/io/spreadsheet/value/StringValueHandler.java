@@ -12,14 +12,14 @@ public class StringValueHandler implements ValueHandler
     {
         this.trim = true;
         this.booleanValues = new String[] { "No", "Yes" };
-        this.numericFormat = "%d";
+        this.numericFormat = "%f";
     }
 
     public StringValueHandler(boolean trim)
     {
         this.trim = trim;
         this.booleanValues = new String[] { "No", "Yes" };
-        this.numericFormat = "%d";
+        this.numericFormat = "%f";
     }
 
     public StringValueHandler(final String numericFormat)
@@ -34,7 +34,7 @@ public class StringValueHandler implements ValueHandler
         assert(booleanValues != null && booleanValues.length == 2);
         this.trim = true;
         this.booleanValues = booleanValues;
-        this.numericFormat = "%d";
+        this.numericFormat = "%f";
     }
 
     public StringValueHandler(final boolean trim, final String numericFormat, final String[] booleanValues)

@@ -10,6 +10,8 @@ import org.netspective.io.spreadsheet.outline.TableOutline;
 import org.netspective.io.spreadsheet.outline.TableOutlineCreator;
 import org.netspective.io.spreadsheet.template.WorksheetTemplate;
 import org.netspective.io.spreadsheet.validate.ValidationContext;
+import org.netspective.io.spreadsheet.validate.ValidationMessage;
+import org.netspective.io.spreadsheet.validate.cell.CellValidationMessage;
 import org.netspective.io.spreadsheet.validate.outline.NodeValidationMessage;
 import org.netspective.io.spreadsheet.validate.outline.OutlineValidationMessage;
 import org.netspective.io.spreadsheet.validate.row.RowValidationMessage;
@@ -35,8 +37,8 @@ public class WorksheetConsumer
         public Table getTable();
         public boolean isValid();
         public boolean hasWarnings();
-        public RowValidationMessage[] getErrors();
-        public RowValidationMessage[] getWarnings();
+        public ValidationMessage[] getErrors();
+        public ValidationMessage[] getWarnings();
     }
 
     public interface OutlineStructureValidationResult
@@ -55,8 +57,8 @@ public class WorksheetConsumer
 
         public boolean isValid();
         public boolean hasWarnings();
-        public NodeValidationMessage[] getErrors();
-        public NodeValidationMessage[] getWarnings();
+        public ValidationMessage[] getErrors();
+        public ValidationMessage[] getWarnings();
     }
 
     private final WorksheetTemplate worksheetTemplate;
@@ -64,34 +66,29 @@ public class WorksheetConsumer
     private final CacheManager cacheManager;
     private final TableOutlineCreator outlineCreator;
     private final Sheet sheet;
-    private final WorksheetConsumerStageHandler stageHandler;
     private WorksheetConsumerStageHandler.Stage stage = WorksheetConsumerStageHandler.Stage.INITIAL;
 
     public WorksheetConsumer(final Sheet sheet, final WorksheetTemplate worksheetTemplate,
                              final WorksheetDataHandler dataHandler,
-                             final CacheManager cacheManager,
-                             final WorksheetConsumerStageHandler stageHandler)
+                             final CacheManager cacheManager)
     {
         this.sheet = sheet;
         this.worksheetTemplate = worksheetTemplate;
         this.dataHandler = dataHandler;
         this.cacheManager = cacheManager;
-        this.stageHandler = stageHandler;
         this.outlineCreator = null;
     }
 
     public WorksheetConsumer(final Sheet sheet, final WorksheetTemplate worksheetTemplate,
                              final WorksheetDataHandler dataHandler,
                              final CacheManager cacheManager,
-                             final TableOutlineCreator outlineCreator,
-                             final WorksheetConsumerStageHandler stageHandler)
+                             final TableOutlineCreator outlineCreator)
     {
         this.sheet = sheet;
         this.worksheetTemplate = worksheetTemplate;
         this.dataHandler = dataHandler;
         this.outlineCreator = outlineCreator;
         this.cacheManager = cacheManager;
-        this.stageHandler = stageHandler;
     }
 
     public TemplateValidationResult validateTemplate()
@@ -169,13 +166,24 @@ public class WorksheetConsumer
             }
         }
 
-        final List<RowValidationMessage> rowErrors = new ArrayList<RowValidationMessage>();
-        final List<RowValidationMessage> rowWarnings = new ArrayList<RowValidationMessage>();
+        final List<ValidationMessage> rowErrors = new ArrayList<ValidationMessage>();
+        final List<ValidationMessage> rowWarnings = new ArrayList<ValidationMessage>();
         for(final RowValidationMessage m : rowMessages)
-            if(worksheetTemplate.isWarning(m))
-                rowWarnings.add(m);
-            else
-                rowErrors.add(m);
+        {
+            if(m.getMessage() != null)
+            {
+                if(worksheetTemplate.isWarning(m))
+                    rowWarnings.add(m);
+                else
+                    rowErrors.add(m);
+            }
+
+            for(final CellValidationMessage cvm : m.getCellValidationErrors())
+                if(worksheetTemplate.isWarning(cvm))
+                    rowWarnings.add(cvm);
+                else
+                    rowErrors.add(cvm);
+        }
 
         if(cacheManager != null)
             cacheManager.cache(table);
@@ -197,14 +205,14 @@ public class WorksheetConsumer
                 return table;
             }
 
-            public RowValidationMessage[] getErrors()
+            public ValidationMessage[] getErrors()
             {
-                return rowErrors.toArray(new RowValidationMessage[rowErrors.size()]);
+                return rowErrors.toArray(new ValidationMessage[rowErrors.size()]);
             }
 
-            public RowValidationMessage[] getWarnings()
+            public ValidationMessage[] getWarnings()
             {
-                return rowWarnings.toArray(new RowValidationMessage[rowWarnings.size()]);
+                return rowWarnings.toArray(new ValidationMessage[rowWarnings.size()]);
             }
         };
     }
@@ -258,13 +266,24 @@ public class WorksheetConsumer
 
         outline.isValid(vc, nodeMessages);
 
-        final List<NodeValidationMessage> nodeErrors = new ArrayList<NodeValidationMessage>();
-        final List<NodeValidationMessage> nodeWarnings = new ArrayList<NodeValidationMessage>();
+        final List<ValidationMessage> nodeErrors = new ArrayList<ValidationMessage>();
+        final List<ValidationMessage> nodeWarnings = new ArrayList<ValidationMessage>();
         for(final NodeValidationMessage m : nodeMessages)
-            if(worksheetTemplate.isWarning(m))
-                nodeWarnings.add(m);
-            else
-                nodeErrors.add(m);
+        {
+            if(m.getMessage() != null)
+            {
+                if(worksheetTemplate.isWarning(m))
+                    nodeWarnings.add(m);
+                else
+                    nodeErrors.add(m);
+            }
+            
+            for(final CellValidationMessage cvm : m.getCellValidationErrors())
+                if(worksheetTemplate.isWarning(cvm))
+                    nodeWarnings.add(cvm);
+                else
+                    nodeErrors.add(cvm);                
+        }
 
         return new OutlineDataValidationResult()
         {
@@ -283,74 +302,74 @@ public class WorksheetConsumer
                 return nodeWarnings.size() > 0;
             }
 
-            public NodeValidationMessage[] getErrors()
+            public ValidationMessage[] getErrors()
             {
-                return nodeErrors.toArray(new NodeValidationMessage[nodeErrors.size()]);
+                return nodeErrors.toArray(new ValidationMessage[nodeErrors.size()]);
             }
 
-            public NodeValidationMessage[] getWarnings()
+            public ValidationMessage[] getWarnings()
             {
-                return nodeWarnings.toArray(new NodeValidationMessage[nodeWarnings.size()]);
+                return nodeWarnings.toArray(new ValidationMessage[nodeWarnings.size()]);
             }
         };
     }
 
-    public void consume()
+    public void consume(final WorksheetConsumerStageHandler stageHandler)
     {
-        startConsumption();
+        startConsumption(stageHandler);
 
-        startStage(WorksheetConsumerStageHandler.Stage.VALIDATING_TEMPLATE);
+        startStage(stageHandler, WorksheetConsumerStageHandler.Stage.VALIDATING_TEMPLATE);
         final TemplateValidationResult tvr = validateTemplate();
         if(tvr.isValid())
         {
-            completeStage(getStage(), tvr.getWarnings());
+            completeStage(stageHandler, getStage(), tvr.getWarnings());
 
-            startStage(WorksheetConsumerStageHandler.Stage.VALIDATING_DATA);
+            startStage(stageHandler, WorksheetConsumerStageHandler.Stage.VALIDATING_DATA);
             final DataValidationResult dvr = validateData();
             if(dvr.isValid())
             {
-                completeStage(WorksheetConsumerStageHandler.Stage.VALIDATING_DATA, dvr.getWarnings());
+                completeStage(stageHandler, WorksheetConsumerStageHandler.Stage.VALIDATING_DATA, dvr.getWarnings());
 
                 if(outlineCreator != null)
                 {
-                    startStage(WorksheetConsumerStageHandler.Stage.VALIDATING_OUTINE_STRUCT);
+                    startStage(stageHandler, WorksheetConsumerStageHandler.Stage.VALIDATING_OUTINE_STRUCT);
                     final OutlineStructureValidationResult osvr = validateOutlineStructure(dvr.getTable());
                     if(osvr.isValid())
                     {
-                        completeStage(WorksheetConsumerStageHandler.Stage.VALIDATING_OUTINE_STRUCT, osvr.getWarnings());
+                        completeStage(stageHandler, WorksheetConsumerStageHandler.Stage.VALIDATING_OUTINE_STRUCT, osvr.getWarnings());
 
-                        startStage(WorksheetConsumerStageHandler.Stage.VALIDATING_OUTLINE_DATA);
+                        startStage(stageHandler, WorksheetConsumerStageHandler.Stage.VALIDATING_OUTLINE_DATA);
                         final OutlineDataValidationResult odvr = validateOutlineData(osvr.getTableOutline());
                         if(odvr.isValid())
                         {
-                            completeStage(WorksheetConsumerStageHandler.Stage.VALIDATING_OUTLINE_DATA, odvr.getWarnings());
-                            endConsumption(true, dvr.getTable(), odvr.getTableOutline());
+                            completeStage(stageHandler, WorksheetConsumerStageHandler.Stage.VALIDATING_OUTLINE_DATA, odvr.getWarnings());
+                            endConsumption(stageHandler, true, dvr.getTable(), odvr.getTableOutline());
                         }
                         else
                         {
-                            completeStage(WorksheetConsumerStageHandler.Stage.VALIDATING_OUTLINE_DATA, odvr.getErrors(), odvr.getWarnings());
-                            endConsumption(false, dvr.getTable(), odvr.getTableOutline());
+                            completeStage(stageHandler, WorksheetConsumerStageHandler.Stage.VALIDATING_OUTLINE_DATA, odvr.getErrors(), odvr.getWarnings());
+                            endConsumption(stageHandler, false, dvr.getTable(), odvr.getTableOutline());
                         }
                     }
                     else
                     {
-                        completeStage(WorksheetConsumerStageHandler.Stage.VALIDATING_OUTLINE_DATA, osvr.getErrors(), osvr.getWarnings());
-                        endConsumption(false, dvr.getTable());
+                        completeStage(stageHandler, WorksheetConsumerStageHandler.Stage.VALIDATING_OUTLINE_DATA, osvr.getErrors(), osvr.getWarnings());
+                        endConsumption(stageHandler, false, dvr.getTable());
                     }
                 }
                 else
-                    endConsumption(true, dvr.getTable());
+                    endConsumption(stageHandler, true, dvr.getTable());
             }
             else
             {
-                completeStage(WorksheetConsumerStageHandler.Stage.VALIDATING_DATA, dvr.getErrors(), dvr.getWarnings());
-                endConsumption(false, dvr.getTable());
+                completeStage(stageHandler, WorksheetConsumerStageHandler.Stage.VALIDATING_DATA, dvr.getErrors(), dvr.getWarnings());
+                endConsumption(stageHandler, false, dvr.getTable());
             }
         }
         else
         {
-            completeStage(WorksheetConsumerStageHandler.Stage.VALIDATING_TEMPLATE, tvr.getErrors(), tvr.getWarnings());
-            endConsumption(false, null);
+            completeStage(stageHandler, WorksheetConsumerStageHandler.Stage.VALIDATING_TEMPLATE, tvr.getErrors(), tvr.getWarnings());
+            endConsumption(stageHandler, false, null);
         }
 
     }
@@ -360,36 +379,36 @@ public class WorksheetConsumer
         return stage;
     }
 
-    protected void startConsumption()
+    protected void startConsumption(final WorksheetConsumerStageHandler stageHandler)
     {
         stageHandler.startConsumption();
     }
 
-    protected void startStage(final WorksheetConsumerStageHandler.Stage stage)
+    protected void startStage(final WorksheetConsumerStageHandler stageHandler, final WorksheetConsumerStageHandler.Stage stage)
     {
         this.stage = stage;
         stageHandler.startStage(stage);
     }
 
-    protected void completeStage(final WorksheetConsumerStageHandler.Stage stage, final Message[] warnings)
+    protected void completeStage(final WorksheetConsumerStageHandler stageHandler, final WorksheetConsumerStageHandler.Stage stage, final Message[] warnings)
     {
         stageHandler.completeStage(stage, warnings);
     }
 
-    protected void completeStage(final WorksheetConsumerStageHandler.Stage stage, final Message[] errors, final Message[] warnings)
+    protected void completeStage(final WorksheetConsumerStageHandler stageHandler, final WorksheetConsumerStageHandler.Stage stage, final Message[] errors, final Message[] warnings)
     {
         stageHandler.completeStage(stage, errors, warnings);
     }
 
-    protected void endConsumption(boolean successful, final Table table, final TableOutline outline)
+    protected void endConsumption(final WorksheetConsumerStageHandler stageHandler, boolean successful, final Table table, final TableOutline outline)
     {
         if(successful)
             this.stage = WorksheetConsumerStageHandler.Stage.FINAL;
         stageHandler.endConsumption(successful, table, outline);
     }
 
-    protected void endConsumption(boolean successful, final Table table)
+    protected void endConsumption(final WorksheetConsumerStageHandler stageHandler, boolean successful, final Table table)
     {
-        endConsumption(successful, table, null);
+        endConsumption(stageHandler, successful, table, null);
     }
 }

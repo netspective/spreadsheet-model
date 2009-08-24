@@ -16,7 +16,7 @@ public class DataRequiredRule implements CellValidationRule
     public DataRequiredRule(final String messageCode) 
     {
         this.messageCode = messageCode;
-        this.invalidMessageFormatSpec = null;
+        this.invalidMessageFormatSpec = "%s is blank, a value is required in this cell.";
     }
 
     public DataRequiredRule(final String messageCode, final String invalidMessageFormatSpec)
@@ -31,7 +31,10 @@ public class DataRequiredRule implements CellValidationRule
         final ValueHandler vh = cell.getColumn().getValueHandler();
         
         if(vh.isBlank(cell.getCell()))
-            return true;
+        {
+            messages.add(new DefaultCellValidationMessage(table, row, cell, messageCode, invalidMessageFormatSpec, vc.getValidationMessageCellLocator(cell, false)));
+            return false;
+        }
 
         if(! vh.isValid(cell.getCell(), unassignableTextValue))
         {

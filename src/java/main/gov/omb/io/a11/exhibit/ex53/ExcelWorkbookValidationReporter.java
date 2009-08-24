@@ -104,21 +104,22 @@ public class ExcelWorkbookValidationReporter implements WorksheetConsumerStageHa
 
     public void recordMessage(final Stage stage, final Sheet sheet, final Message message)
     {
-        if(message instanceof RowValidationMessage)
+        if(message instanceof CellValidationMessage)
+        {
+            final CellValidationMessage cm = (CellValidationMessage) message;
+            final Cell cell = cm.getCell().getCell();
+            final String locator = Util.getCellLocator(cell);
+
+            final Hyperlink hl = createHelper.createHyperlink(Hyperlink.LINK_DOCUMENT);
+            hl.setAddress(String.format("'%s'!%s", parameters.getSheet(), locator));
+            createRow(sheet, hl, stage.name(), cm.getCode(), cm.getRow().getRowNumberInSheet(), locator, cm.getMessage());
+
+            cell.setCellStyle(cellErrorStyle);
+        }
+        else if(message instanceof RowValidationMessage)
         {
             final RowValidationMessage rvm = (RowValidationMessage) message;
             createRow(sheet, null, stage.name(), message.getCode(), rvm.getRow().getRowNumberInSheet(), "", message.getMessage());
-            for(final CellValidationMessage cm : rvm.getCellValidationErrors())
-            {
-                final Cell cell = cm.getCell().getCell();
-                final String locator = Util.getCellLocator(cell);
-
-                final Hyperlink hl = createHelper.createHyperlink(Hyperlink.LINK_DOCUMENT);
-                hl.setAddress(String.format("'%s'!%s", parameters.getSheet(), locator));
-                createRow(sheet, hl, stage.name(), cm.getCode(), rvm.getRow().getRowNumberInSheet(), locator, cm.getMessage());
-
-                cell.setCellStyle(cellErrorStyle);
-            }
         }
         else
             createRow(sheet, null, stage.name(), message.getCode(), "", "", message.getMessage());

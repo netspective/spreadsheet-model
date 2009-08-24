@@ -20,7 +20,6 @@ import org.netspective.io.spreadsheet.model.TableRow;
 import org.netspective.io.spreadsheet.outline.TableOutline;
 import org.netspective.io.spreadsheet.outline.TableOutlineNode;
 import org.netspective.io.spreadsheet.util.Util;
-import org.netspective.io.spreadsheet.validate.row.RowValidationMessage;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -32,8 +31,24 @@ public class Exhibit53Validator
 {
     public static void main(final String[] args) throws ParseException, IOException, InvalidFormatException
     {
+        final FEACodesManager feaCodesManager = FEACodesManager.getInstance();
+        if(! feaCodesManager.isValid())
+        {
+            for(final Message m : feaCodesManager.getErrors())
+                System.err.printf("[%s] %s\n", m.getCode(), m.getMessage());
+            System.err.printf("Unable to run Exhibit 53 validator without FEA codes.\n");
+            return;
+        }
+        else
+            System.err.printf("Cached %d LOB/Svc Type codes and %d Sub-function/Components codes.\n",
+                    feaCodesManager.getLineOfBusinessOrServiceTypesCache().size(),
+                    feaCodesManager.getSubFunctionOrSvcComponentsCache().size());            
+
         final Options options = new Options();
         options.addOption(new Option("?", "help", false, "See summary of usage."));
+        options.addOption(new Option("l", "show-fea-lob-codes", false, "Show the cached FEA LOB codes."));
+        options.addOption(new Option("s", "show-fea-subf-codes", false, "Show the cached FEA Subfunction codes."));
+
         for(final DefaultExhibit53Parameters.Parameter param : DefaultExhibit53Parameters.PARAMETERS)
         {
             final Option option = new Option(null, param.getName(), ! param.getArgument().isFlag(), "");
@@ -54,6 +69,12 @@ public class Exhibit53Validator
                 return;                
             }
 
+            if(commandLine.hasOption("show-fea-lob-codes") || commandLine.hasOption("show-fea-subf-codes"))
+            {
+                showFEACodes(commandLine);
+                return;
+            }
+
             final Map<String, String> parameterValues = new HashMap<String, String>();
             for(final Option option : commandLine.getOptions())
                 parameterValues.put(option.getLongOpt(), option.getValue());
@@ -71,9 +92,9 @@ public class Exhibit53Validator
 
             final Exhibit53WorksheetTemplate template = new Exhibit53WorksheetTemplate(parameters);
             final WorksheetDataHandler exhibit53DataHandler = new DefaultWorksheetDataHandler(9, 2, 17, new int[] { 2, 3 });
-            final WorksheetConsumer consumer = new WorksheetConsumer(parameters.getSheet(), template, exhibit53DataHandler, template, template, handlers);
+            final WorksheetConsumer consumer = new WorksheetConsumer(parameters.getSheet(), template, exhibit53DataHandler, template, template);
 
-            consumer.consume();
+            consumer.consume(handlers);
 
             final String[] workbookAndSheetNames = workbookValidationReporter.write();
             System.out.printf("\nCreated error report file in %s.\n", workbookAndSheetNames[0]);
@@ -85,6 +106,23 @@ public class Exhibit53Validator
         {
             System.err.printf("** ERROR **: %s\n", e.getMessage());
             showHelp(options);
+        }
+    }
+
+    public static void showFEACodes(final CommandLine commandLine)
+    {
+        if(commandLine.hasOption("show-fea-lob-codes"))
+        {
+            System.out.println("FEA Line of Business codes");
+            for(final Map.Entry entry : FEACodesManager.getInstance().getLineOfBusinessOrServiceTypesCache().entrySet())
+                System.out.printf("[%s] %s\n", entry.getKey(), entry.getValue());
+        }
+
+        if(commandLine.hasOption("show-fea-subf-codes"))
+        {
+            System.out.println("FEA Subfunction codes");
+            for(final Map.Entry entry : FEACodesManager.getInstance().getSubFunctionOrSvcComponentsCache().entrySet())
+                System.out.printf("[%s] %s\n", entry.getKey(), entry.getValue());
         }
     }
 
@@ -117,7 +155,7 @@ public class Exhibit53Validator
         {
             if(warnings.length > 0)
                 System.out.printf("Message [%s] %d warning(s) encountered.\n", stage.name(), warnings.length);
-            showMessages(System.out, stage, "W", warnings);
+            showMessages(System.out, stage, "   WARN", warnings);
         }
 
         public void completeStage(final Stage stage, final Message[] errors, final Message[] warnings)
@@ -151,12 +189,7 @@ public class Exhibit53Validator
                 return;
 
             for(final Message m : messages)
-            {
                 stream.printf("%s [%s] %s\n", type, m.getCode(), m.getMessage());
-                if(m instanceof RowValidationMessage)
-                    for(final Message cm : ((RowValidationMessage) m).getCellValidationErrors())
-                        stream.printf("        [%s] %s\n", cm.getCode(), cm.getMessage());
-            }
         }
     }
 
