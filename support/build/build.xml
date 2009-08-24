@@ -20,7 +20,7 @@
 
     <target name="compile">
         <mkdir dir="${module.build.classes.main.home}"/>
-        <javac srcdir="${module.src.main.home}" destdir="${module.build.classes.main.home}">
+        <javac srcdir="${module.src.main.home}" destdir="${module.build.classes.main.home}" target="1.5">
             <classpath refid="module.classpath.runtime"/>
         </javac>
     </target>
