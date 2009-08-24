@@ -8,9 +8,16 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.netspective.io.spreadsheet.consumer.DefaultWorksheetDataHandler;
+import org.netspective.io.spreadsheet.consumer.MultipleValidationStageHandlers;
+import org.netspective.io.spreadsheet.consumer.WorksheetConsumer;
+import org.netspective.io.spreadsheet.consumer.WorksheetConsumerStageHandler;
+import org.netspective.io.spreadsheet.consumer.WorksheetDataHandler;
 import org.netspective.io.spreadsheet.message.Message;
+import org.netspective.io.spreadsheet.model.Table;
 import org.netspective.io.spreadsheet.model.TableCell;
 import org.netspective.io.spreadsheet.model.TableRow;
+import org.netspective.io.spreadsheet.outline.TableOutline;
 import org.netspective.io.spreadsheet.outline.TableOutlineNode;
 import org.netspective.io.spreadsheet.util.Util;
 import org.netspective.io.spreadsheet.validate.row.RowValidationMessage;
@@ -60,8 +67,13 @@ public class Exhibit53Validator
             }
 
             final ExcelWorkbookValidationReporter workbookValidationReporter = new ExcelWorkbookValidationReporter(parameters);
-            final Exhibit53WorksheetConsumer.ValidationStageHandler[] handlers = { new SimpleValidationReporter(parameters), workbookValidationReporter };
-            new Exhibit53WorksheetConsumer(parameters, handlers).consume();
+            final MultipleValidationStageHandlers handlers = new MultipleValidationStageHandlers(new SimpleValidationReporter(parameters), workbookValidationReporter);
+
+            final Exhibit53WorksheetTemplate template = new Exhibit53WorksheetTemplate(parameters);
+            final WorksheetDataHandler exhibit53DataHandler = new DefaultWorksheetDataHandler(9, 2, 17, new int[] { 2, 3 });
+            final WorksheetConsumer consumer = new WorksheetConsumer(parameters.getSheet(), template, exhibit53DataHandler, template, template, handlers);
+
+            consumer.consume();
 
             final String[] workbookAndSheetNames = workbookValidationReporter.write();
             System.out.printf("\nCreated error report file in %s.\n", workbookAndSheetNames[0]);
@@ -83,7 +95,7 @@ public class Exhibit53Validator
         formatter.printHelp( "Exhibit53Validator --workbook-name Exhibit53.xls --budget-year=2011 --agency-code=123", options);
     }
 
-    public static class SimpleValidationReporter implements Exhibit53WorksheetConsumer.ValidationStageHandler
+    public static class SimpleValidationReporter implements WorksheetConsumerStageHandler
     {
         private Exhibit53Parameters parameters;
 
@@ -92,47 +104,48 @@ public class Exhibit53Validator
             this.parameters = parameters;
         }
 
-        public void startStage(final Exhibit53WorksheetConsumer.ValidationStage stage)
+        public void startConsumption()
+        {
+        }
+
+        public void startStage(final Stage stage)
         {
             System.out.printf("   Work [%s] %s.\n", stage.name(), stage.description());
         }
 
-        public void completeStage(final Exhibit53WorksheetConsumer.ValidationStage stage, final Message[] warnings)
+        public void completeStage(final Stage stage, final Message[] warnings)
         {
             if(warnings.length > 0)
                 System.out.printf("Message [%s] %d warning(s) encountered.\n", stage.name(), warnings.length);
             showMessages(System.out, stage, "W", warnings);
         }
 
-        public void completeStage(final Exhibit53WorksheetConsumer.ValidationStage stage, final Message[] errors, final Message[] warnings)
+        public void completeStage(final Stage stage, final Message[] errors, final Message[] warnings)
         {
             System.out.printf("Problem [%s] %d error(s) encountered, %d warning(s).\n", stage.name(), errors.length, warnings.length);
             showMessages(System.err, stage, "  ERROR", errors);
             showMessages(System.out, stage, "   WARN", warnings);
 
             boolean first = true;
-            for(Exhibit53WorksheetConsumer.ValidationStage unhandledStage : Exhibit53WorksheetConsumer.ValidationStage.values())
+            for(final Stage unhandledStage : stage.remaining(true))
             {
-                if(unhandledStage.ordinal() > stage.ordinal() && unhandledStage.ordinal() != Exhibit53WorksheetConsumer.ValidationStage.FINAL.ordinal())
+                if(first)
                 {
-                    if(first)
-                    {
-                        System.out.printf("Validation incomplete. The following validations were not performed due to errors:\n");
-                        first = false;
-                    }
-
-                    System.out.printf(" * [%s] %s.\n", unhandledStage.name(), unhandledStage.description());
+                    System.out.printf("Validation incomplete. The following validations were not performed due to errors:\n");
+                    first = false;
                 }
+
+                System.out.printf(" * [%s] %s.\n", unhandledStage.name(), unhandledStage.description());
             }
         }
 
-        public void completeFinalStage(final Exhibit53Parameters parameters, final Exhibit53WorksheetTemplate.Exhibit53 exhibit53)
+        public void endConsumption(final boolean successful, final Table table, final TableOutline outline)
         {
-            if(parameters.isDebug())
-                System.out.println(Util.renderNodes(0, exhibit53.getRootNodes(), new DebuggingRenderer()));
+            if(successful && outline != null && parameters.isDebug())
+                System.out.println(Util.renderNodes(0, outline.getRootNodes(), new DebuggingRenderer()));
         }
 
-        public void showMessages(final PrintStream stream, final Exhibit53WorksheetConsumer.ValidationStage stage, final String type, final Message[] messages)
+        public void showMessages(final PrintStream stream, final Stage stage, final String type, final Message[] messages)
         {
             if(! parameters.isDebug())
                 return;

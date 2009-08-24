@@ -57,6 +57,7 @@ import java.util.regex.Pattern;
 
 public class Exhibit53WorksheetTemplate implements TableOutlineCreator, WorksheetTemplate, CacheManager, ValidationContext
 {
+    public static final String VERSION = "@VERSION@";
     public static final int DOLLAR_VALUE_BIG_DECIMAL_SCALE = 6;
 
     private final Exhibit53Parameters parameters;

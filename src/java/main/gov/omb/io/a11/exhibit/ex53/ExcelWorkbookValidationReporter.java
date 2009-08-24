@@ -10,7 +10,10 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.netspective.io.spreadsheet.consumer.WorksheetConsumerStageHandler;
 import org.netspective.io.spreadsheet.message.Message;
+import org.netspective.io.spreadsheet.model.Table;
+import org.netspective.io.spreadsheet.outline.TableOutline;
 import org.netspective.io.spreadsheet.util.Util;
 import org.netspective.io.spreadsheet.validate.cell.CellValidationMessage;
 import org.netspective.io.spreadsheet.validate.row.RowValidationMessage;
@@ -18,7 +21,7 @@ import org.netspective.io.spreadsheet.validate.row.RowValidationMessage;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class ExcelWorkbookValidationReporter implements Exhibit53WorksheetConsumer.ValidationStageHandler
+public class ExcelWorkbookValidationReporter implements WorksheetConsumerStageHandler
 {
     private Exhibit53Parameters parameters;
     private Sheet errorsSheet;
@@ -99,7 +102,7 @@ public class ExcelWorkbookValidationReporter implements Exhibit53WorksheetConsum
         return row;
     }
 
-    public void recordMessage(final Exhibit53WorksheetConsumer.ValidationStage stage, final Sheet sheet, final Message message)
+    public void recordMessage(final Stage stage, final Sheet sheet, final Message message)
     {
         if(message instanceof RowValidationMessage)
         {
@@ -121,31 +124,42 @@ public class ExcelWorkbookValidationReporter implements Exhibit53WorksheetConsum
             createRow(sheet, null, stage.name(), message.getCode(), "", "", message.getMessage());
     }
 
-    public void recordMessages(final Exhibit53WorksheetConsumer.ValidationStage stage, final Sheet sheet, final Message[] messages)
+    public void recordMessages(final Stage stage, final Sheet sheet, final Message[] messages)
     {
         for(final Message m : messages)
             recordMessage(stage, sheet, m);
     }
 
-    public void startStage(final Exhibit53WorksheetConsumer.ValidationStage stage)
+
+    public void startConsumption()
     {
 
     }
 
-    public void completeStage(final Exhibit53WorksheetConsumer.ValidationStage stage, final Message[] warnings)
+    public void endConsumption(final boolean successful, final Table table, final TableOutline outline)
+    {
+
+    }
+
+    public void startStage(final Stage stage)
+    {
+
+    }
+
+    public void completeStage(final Stage stage, final Message[] warnings)
     {
         recordMessages(stage, warningsSheet, warnings);
     }
 
-    public void completeStage(final Exhibit53WorksheetConsumer.ValidationStage stage, final Message[] errors, final Message[] warnings)
+    public void completeStage(final Stage stage, final Message[] errors, final Message[] warnings)
     {
         recordMessages(stage, errorsSheet, errors);
         recordMessages(stage, warningsSheet, warnings);
 
         boolean first = true;
-        for(Exhibit53WorksheetConsumer.ValidationStage unhandledStage : Exhibit53WorksheetConsumer.ValidationStage.values())
+        for(Stage unhandledStage : Stage.values())
         {
-            if(unhandledStage.ordinal() > stage.ordinal() && unhandledStage.ordinal() != Exhibit53WorksheetConsumer.ValidationStage.FINAL.ordinal())
+            if(unhandledStage.ordinal() > stage.ordinal() && unhandledStage.ordinal() != Stage.FINAL.ordinal())
             {
                 if(first)
                 {
@@ -159,10 +173,5 @@ public class ExcelWorkbookValidationReporter implements Exhibit53WorksheetConsum
                 errorsSheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 4));
             }
         }
-    }
-
-    public void completeFinalStage(final Exhibit53Parameters parameters, final Exhibit53WorksheetTemplate.Exhibit53 exhibit53)
-    {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 }

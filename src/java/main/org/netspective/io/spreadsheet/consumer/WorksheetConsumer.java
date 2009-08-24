@@ -3,6 +3,7 @@ package org.netspective.io.spreadsheet.consumer;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.netspective.io.spreadsheet.cache.CacheManager;
+import org.netspective.io.spreadsheet.message.Message;
 import org.netspective.io.spreadsheet.model.Table;
 import org.netspective.io.spreadsheet.model.TableRow;
 import org.netspective.io.spreadsheet.outline.TableOutline;
@@ -63,23 +64,34 @@ public class WorksheetConsumer
     private final CacheManager cacheManager;
     private final TableOutlineCreator outlineCreator;
     private final Sheet sheet;
+    private final WorksheetConsumerStageHandler stageHandler;
+    private WorksheetConsumerStageHandler.Stage stage = WorksheetConsumerStageHandler.Stage.INITIAL;
 
-    public WorksheetConsumer(final WorksheetTemplate worksheetTemplate, final WorksheetDataHandler dataHandler, final CacheManager cacheManager, final Sheet sheet)
+    public WorksheetConsumer(final Sheet sheet, final WorksheetTemplate worksheetTemplate,
+                             final WorksheetDataHandler dataHandler,
+                             final CacheManager cacheManager,
+                             final WorksheetConsumerStageHandler stageHandler)
     {
+        this.sheet = sheet;
         this.worksheetTemplate = worksheetTemplate;
         this.dataHandler = dataHandler;
         this.cacheManager = cacheManager;
+        this.stageHandler = stageHandler;
         this.outlineCreator = null;
-        this.sheet = sheet;
     }
 
-    public WorksheetConsumer(final WorksheetTemplate worksheetTemplate, final WorksheetDataHandler dataHandler, final CacheManager cacheManager, final TableOutlineCreator outlineCreator, final Sheet sheet)
+    public WorksheetConsumer(final Sheet sheet, final WorksheetTemplate worksheetTemplate,
+                             final WorksheetDataHandler dataHandler,
+                             final CacheManager cacheManager,
+                             final TableOutlineCreator outlineCreator,
+                             final WorksheetConsumerStageHandler stageHandler)
     {
+        this.sheet = sheet;
         this.worksheetTemplate = worksheetTemplate;
         this.dataHandler = dataHandler;
         this.outlineCreator = outlineCreator;
         this.cacheManager = cacheManager;
-        this.sheet = sheet;
+        this.stageHandler = stageHandler;
     }
 
     public TemplateValidationResult validateTemplate()
@@ -281,5 +293,103 @@ public class WorksheetConsumer
                 return nodeWarnings.toArray(new NodeValidationMessage[nodeWarnings.size()]);
             }
         };
+    }
+
+    public void consume()
+    {
+        startConsumption();
+
+        startStage(WorksheetConsumerStageHandler.Stage.VALIDATING_TEMPLATE);
+        final TemplateValidationResult tvr = validateTemplate();
+        if(tvr.isValid())
+        {
+            completeStage(getStage(), tvr.getWarnings());
+
+            startStage(WorksheetConsumerStageHandler.Stage.VALIDATING_DATA);
+            final DataValidationResult dvr = validateData();
+            if(dvr.isValid())
+            {
+                completeStage(WorksheetConsumerStageHandler.Stage.VALIDATING_DATA, dvr.getWarnings());
+
+                if(outlineCreator != null)
+                {
+                    startStage(WorksheetConsumerStageHandler.Stage.VALIDATING_OUTINE_STRUCT);
+                    final OutlineStructureValidationResult osvr = validateOutlineStructure(dvr.getTable());
+                    if(osvr.isValid())
+                    {
+                        completeStage(WorksheetConsumerStageHandler.Stage.VALIDATING_OUTINE_STRUCT, osvr.getWarnings());
+
+                        startStage(WorksheetConsumerStageHandler.Stage.VALIDATING_OUTLINE_DATA);
+                        final OutlineDataValidationResult odvr = validateOutlineData(osvr.getTableOutline());
+                        if(odvr.isValid())
+                        {
+                            completeStage(WorksheetConsumerStageHandler.Stage.VALIDATING_OUTLINE_DATA, odvr.getWarnings());
+                            endConsumption(true, dvr.getTable(), odvr.getTableOutline());
+                        }
+                        else
+                        {
+                            completeStage(WorksheetConsumerStageHandler.Stage.VALIDATING_OUTLINE_DATA, odvr.getErrors(), odvr.getWarnings());
+                            endConsumption(false, dvr.getTable(), odvr.getTableOutline());
+                        }
+                    }
+                    else
+                    {
+                        completeStage(WorksheetConsumerStageHandler.Stage.VALIDATING_OUTLINE_DATA, osvr.getErrors(), osvr.getWarnings());
+                        endConsumption(false, dvr.getTable());
+                    }
+                }
+                else
+                    endConsumption(true, dvr.getTable());
+            }
+            else
+            {
+                completeStage(WorksheetConsumerStageHandler.Stage.VALIDATING_DATA, dvr.getErrors(), dvr.getWarnings());
+                endConsumption(false, dvr.getTable());
+            }
+        }
+        else
+        {
+            completeStage(WorksheetConsumerStageHandler.Stage.VALIDATING_TEMPLATE, tvr.getErrors(), tvr.getWarnings());
+            endConsumption(false, null);
+        }
+
+    }
+
+    public WorksheetConsumerStageHandler.Stage getStage()
+    {
+        return stage;
+    }
+
+    protected void startConsumption()
+    {
+        stageHandler.startConsumption();
+    }
+
+    protected void startStage(final WorksheetConsumerStageHandler.Stage stage)
+    {
+        this.stage = stage;
+        stageHandler.startStage(stage);
+    }
+
+    protected void completeStage(final WorksheetConsumerStageHandler.Stage stage, final Message[] warnings)
+    {
+        stageHandler.completeStage(stage, warnings);
+    }
+
+    protected void completeStage(final WorksheetConsumerStageHandler.Stage stage, final Message[] errors, final Message[] warnings)
+    {
+        stageHandler.completeStage(stage, errors, warnings);
+    }
+
+    protected void endConsumption(boolean successful, final Table table, final TableOutline outline)
+    {
+        if(successful)
+            this.stage = WorksheetConsumerStageHandler.Stage.FINAL;
+        stageHandler.endConsumption(successful, table, outline);
+    }
+
+    protected void endConsumption(boolean successful, final Table table)
+    {
+        endConsumption(successful, table, null);
     }
 }
