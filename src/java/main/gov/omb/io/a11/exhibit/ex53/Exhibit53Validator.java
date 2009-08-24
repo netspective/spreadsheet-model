@@ -59,7 +59,15 @@ public class Exhibit53Validator
                 return;
             }
 
-            new Exhibit53WorksheetConsumer(parameters, new ValidationStageHandler()).consume();
+            final ExcelWorkbookValidationReporter workbookValidationReporter = new ExcelWorkbookValidationReporter(parameters);
+            final Exhibit53WorksheetConsumer.ValidationStageHandler[] handlers = { new SimpleValidationReporter(parameters), workbookValidationReporter };
+            new Exhibit53WorksheetConsumer(parameters, handlers).consume();
+
+            final String[] workbookAndSheetNames = workbookValidationReporter.write();
+            System.out.printf("\nCreated error report file in %s.\n", workbookAndSheetNames[0]);
+            System.out.printf(" * Cells with errors are marked with red border in '%s' sheet.\n", parameters.getSheet().getSheetName());
+            System.out.printf(" * Errors are reported in the '%s' sheet.\n", workbookAndSheetNames[1]);
+            System.out.printf(" * Warnings are reported in the '%s' sheet.\n", workbookAndSheetNames[2]);
         }
         catch (ParseException e)
         {
@@ -75,25 +83,32 @@ public class Exhibit53Validator
         formatter.printHelp( "Exhibit53Validator --workbook-name Exhibit53.xls --budget-year=2011 --agency-code=123", options);
     }
 
-    public static class ValidationStageHandler implements Exhibit53WorksheetConsumer.ValidationStageHandler
+    public static class SimpleValidationReporter implements Exhibit53WorksheetConsumer.ValidationStageHandler
     {
+        private Exhibit53Parameters parameters;
+
+        public SimpleValidationReporter(final Exhibit53Parameters parameters)
+        {
+            this.parameters = parameters;
+        }
+
         public void startStage(final Exhibit53WorksheetConsumer.ValidationStage stage)
         {
-            System.out.printf(" Start [%s] %s.\n", stage.name(), stage.getDescription());
+            System.out.printf("   Work [%s] %s.\n", stage.name(), stage.description());
         }
 
         public void completeStage(final Exhibit53WorksheetConsumer.ValidationStage stage, final Message[] warnings)
         {
             if(warnings.length > 0)
-                System.out.printf("Finish [%s] %d warning(s) encountered.\n", stage.name(), warnings.length);
+                System.out.printf("Message [%s] %d warning(s) encountered.\n", stage.name(), warnings.length);
             showMessages(System.out, stage, "W", warnings);
         }
 
         public void completeStage(final Exhibit53WorksheetConsumer.ValidationStage stage, final Message[] errors, final Message[] warnings)
         {
-            System.out.printf("Finish [%s] %d error(s) encountered, %d warning(s).\n", stage.name(), errors.length, warnings.length);
-            showMessages(System.err, stage, " ERROR", errors);
-            showMessages(System.out, stage, "  WARN", warnings);
+            System.out.printf("Problem [%s] %d error(s) encountered, %d warning(s).\n", stage.name(), errors.length, warnings.length);
+            showMessages(System.err, stage, "  ERROR", errors);
+            showMessages(System.out, stage, "   WARN", warnings);
 
             boolean first = true;
             for(Exhibit53WorksheetConsumer.ValidationStage unhandledStage : Exhibit53WorksheetConsumer.ValidationStage.values())
@@ -106,7 +121,7 @@ public class Exhibit53Validator
                         first = false;
                     }
 
-                    System.out.printf(" * [%s] %s.\n", unhandledStage.name(), unhandledStage.getDescription());
+                    System.out.printf(" * [%s] %s.\n", unhandledStage.name(), unhandledStage.description());
                 }
             }
         }
@@ -119,12 +134,15 @@ public class Exhibit53Validator
 
         public void showMessages(final PrintStream stream, final Exhibit53WorksheetConsumer.ValidationStage stage, final String type, final Message[] messages)
         {
+            if(! parameters.isDebug())
+                return;
+
             for(final Message m : messages)
             {
                 stream.printf("%s [%s] %s\n", type, m.getCode(), m.getMessage());
                 if(m instanceof RowValidationMessage)
                     for(final Message cm : ((RowValidationMessage) m).getCellValidationErrors())
-                        stream.printf("       [%s] %s\n", cm.getCode(), cm.getMessage());
+                        stream.printf("        [%s] %s\n", cm.getCode(), cm.getMessage());
             }
         }
     }

@@ -27,6 +27,7 @@ public class DefaultExhibit53Parameters implements Exhibit53Parameters
         PARAMETERS = new Parameter[]
         {
             new ParameterImpl("workbook-name", new ParameterArgumentImpl("file", ArgumentType.STRING), true),
+            new ParameterImpl("report-workbook-name", new ParameterArgumentImpl("file", ArgumentType.STRING), false),
             new ParameterImpl("worksheet-name", new ParameterArgumentImpl("excel-sheet", ArgumentType.STRING), false),
             new ParameterImpl("budget-year", new ParameterArgumentImpl("year", ArgumentType.INT), true),
             new ParameterImpl("agency-code", new ParameterArgumentImpl("code", ArgumentType.STRING), true),
@@ -60,6 +61,7 @@ public class DefaultExhibit53Parameters implements Exhibit53Parameters
     }
 
     private String workbookName;
+    private String reportWorkbookName;
     private String worksheetName;
     private boolean debug;
     private int budgetYear;
@@ -145,6 +147,20 @@ public class DefaultExhibit53Parameters implements Exhibit53Parameters
     public String getWorkbookAbsolutePath()
     {
         return new File(workbookName).getAbsolutePath();
+    }
+
+    public String getReportWorkbookName()
+    {
+        if(reportWorkbookName != null) return reportWorkbookName;
+
+        final StringBuilder reportFileName = new StringBuilder(getWorkbookAbsolutePath());
+        reportFileName.insert(reportFileName.lastIndexOf(".xls"), "-report");
+        return reportFileName.toString();
+    }
+
+    public void setReportWorkbookName(final String reportWorkbookName)
+    {
+        this.reportWorkbookName = reportWorkbookName;
     }
 
     public String getWorkbookNameProvided()

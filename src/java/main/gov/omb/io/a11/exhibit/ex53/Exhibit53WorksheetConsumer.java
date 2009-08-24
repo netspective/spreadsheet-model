@@ -23,7 +23,7 @@ public class Exhibit53WorksheetConsumer
             this.description = description;
         }
 
-        public String getDescription()
+        public String description()
         {
             return description;
         }
@@ -38,13 +38,37 @@ public class Exhibit53WorksheetConsumer
     }
 
     private final Exhibit53Parameters parameters;
-    private final ValidationStageHandler stageHandler;
+    private final ValidationStageHandler[] stageHandlers;
+    private final ValidationStageHandler stageHandler = new ValidationStageHandlerWrapper();
     private ValidationStage stage = ValidationStage.INITIAL;
 
-    public Exhibit53WorksheetConsumer(final Exhibit53Parameters parameters, final ValidationStageHandler handler)
+    public class ValidationStageHandlerWrapper implements ValidationStageHandler
+    {
+        public void startStage(final ValidationStage stage)
+        {
+            for(final ValidationStageHandler h : stageHandlers) h.startStage(stage);
+        }
+
+        public void completeStage(final ValidationStage stage, final Message[] warnings)
+        {
+            for(final ValidationStageHandler h : stageHandlers) h.completeStage(stage, warnings);
+        }
+
+        public void completeStage(final ValidationStage stage, final Message[] errors, final Message[] warnings)
+        {
+            for(final ValidationStageHandler h : stageHandlers) h.completeStage(stage, errors, warnings);
+        }
+
+        public void completeFinalStage(final Exhibit53Parameters parameters, final Exhibit53WorksheetTemplate.Exhibit53 exhibit53)
+        {
+            for(final ValidationStageHandler h : stageHandlers) h.completeFinalStage(parameters, exhibit53);
+        }
+    }
+
+    public Exhibit53WorksheetConsumer(final Exhibit53Parameters parameters, final ValidationStageHandler[] handlers)
     {
         this.parameters = parameters;
-        this.stageHandler = handler;
+        this.stageHandlers = handlers;
     }
 
     public void consume()
