@@ -14,6 +14,7 @@
         <entry key="build.number" type="int" default="0" operation="+"/>
         <entry key="build.date" type="date" value="now" pattern="M/d/yy h:mm a"/>
     </propertyfile>
+    <property file="${module.src.main.home}/org/netspective/io/spreadsheet/PackageAttributes.properties"/>
 
     <path id="module.classpath.runtime">
         <fileset dir="${module.lib.home}/runtime" includes="**/*.jar"/>
