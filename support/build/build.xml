@@ -1,6 +1,6 @@
 <project name="library" basedir=".">
 
-    <property name="module.home"                    value="../../"/>
+    <property name="module.home"                    value="../.."/>
     <property name="module.src.home"                value="${module.home}/src/java"/>
     <property name="module.src.main.home"           value="${module.src.home}/main"/>
     <property name="module.build.home"              value="${module.home}/support/build"/>
@@ -10,7 +10,10 @@
     <property name="module.jar.home"                value="${module.lib.home}"/>
     <property name="module.jar.name"                value="spreadsheet-model.jar"/>
 
-    <buildnumber/>    
+    <propertyfile file="${module.src.main.home}/org/netspective/io/spreadsheet/PackageAttributes.properties">
+        <entry key="build.number" type="int" default="0" operation="+"/>
+        <entry key="build.date" type="date" value="now" pattern="M/d/yy h:mm a"/>
+    </propertyfile>
 
     <path id="module.classpath.runtime">
         <fileset dir="${module.lib.home}/runtime" includes="**/*.jar"/>
@@ -27,6 +30,7 @@
         </javac>
         <copy todir="${module.build.classes.main.home}">
             <fileset dir="${module.src.main.home}">
+                <include name="**/*.properties"/>
                 <include name="**/*.xls"/>
                 <include name="**/*.xml"/>
             </fileset>

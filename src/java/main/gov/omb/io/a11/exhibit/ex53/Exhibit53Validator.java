@@ -8,6 +8,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.netspective.io.spreadsheet.PackageAttributes;
 import org.netspective.io.spreadsheet.consumer.DefaultWorksheetDataHandler;
 import org.netspective.io.spreadsheet.consumer.MultipleValidationStageHandlers;
 import org.netspective.io.spreadsheet.consumer.WorksheetConsumer;
@@ -130,7 +131,9 @@ public class Exhibit53Validator
     {
         final HelpFormatter formatter = new HelpFormatter();
         formatter.setWidth(120);
-        formatter.printHelp( "Exhibit53Validator --workbook-name Exhibit53.xls --budget-year=2011 --agency-code=123", options);
+        final PackageAttributes packageAttrs = PackageAttributes.PACKAGE;
+        formatter.printHelp(String.format("Exhibit53Validator %s --workbook-name Exhibit53.xls --budget-year=2011 --agency-code=123", packageAttrs.getVersion()), options);
+        System.out.printf("The library was built on %s.\n", packageAttrs.getBuildDate());
     }
 
     public static class SimpleValidationReporter implements WorksheetConsumerStageHandler
