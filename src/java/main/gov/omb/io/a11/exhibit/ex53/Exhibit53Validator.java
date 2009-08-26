@@ -9,7 +9,6 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.netspective.io.spreadsheet.PackageAttributes;
-import org.netspective.io.spreadsheet.consumer.DefaultWorksheetDataHandler;
 import org.netspective.io.spreadsheet.consumer.MultipleValidationStageHandlers;
 import org.netspective.io.spreadsheet.consumer.WorksheetConsumer;
 import org.netspective.io.spreadsheet.consumer.WorksheetConsumerStageHandler;
@@ -92,7 +91,7 @@ public class Exhibit53Validator
             final MultipleValidationStageHandlers handlers = new MultipleValidationStageHandlers(new SimpleValidationReporter(parameters), workbookValidationReporter);
 
             final Exhibit53WorksheetTemplate template = new Exhibit53WorksheetTemplate(parameters);
-            final WorksheetDataHandler exhibit53DataHandler = new DefaultWorksheetDataHandler(9, 2, 17, new int[] { 2, 3 });
+            final WorksheetDataHandler exhibit53DataHandler = new DefaultExhibit53WorksheetDataHandler();
             final WorksheetConsumer consumer = new WorksheetConsumer(parameters.getSheet(), template, exhibit53DataHandler, template, template);
 
             consumer.consume(handlers);
