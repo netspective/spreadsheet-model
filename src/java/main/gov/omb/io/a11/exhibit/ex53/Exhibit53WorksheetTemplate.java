@@ -47,6 +47,7 @@ import org.netspective.io.spreadsheet.value.StringValueHandler;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -108,7 +109,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
         final int groupNamesRowNumber = 7;
         final int columnHeadingsRowNumber = 8;
 
-        final UpiRule upiRule = new UpiRule(MessageCodeFactory.UPI_INVALID, parameters.getBudgetYear(), parameters.getAgencyCode(), parameters.getBureauCodes());
+        final UpiRule upiRule = new UpiRule(MessageCodeFactory.UPI_INVALID, parameters.getBudgetYear(), parameters);
 
         CellValidationRule[] columnValidations = new CellValidationRule[] { upiRule };
         columns.add(new DefaultColumn(stringValueHandler, groupNamesRowNumber, columnHeadingsRowNumber, 2, "2010 UPI (17-digits required for all legacy investments)", columnValidations));
@@ -549,7 +550,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                 {
                     final TableRow investmentDataRow = allTableRows.get(rowIndex);
                     final String upiText = (String) investmentDataRow.findCellForColumn(activeUPIColumn).getValue("");
-                    final UPI upi = DataFormatFactory.getInstance().createUPI(parameters.getBudgetYear(), upiText, parameters.getAgencyCode());
+                    final UPI upi = DataFormatFactory.getInstance().createUPI(parameters.getBudgetYear(), upiText, parameters);
 
                     if(upi.isFundingSourceLine())
                         lines.add(new FundingSource(investmentDataRow, rowIndex, rowIndex));
@@ -718,13 +719,13 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                 {
                     final TableRow investmentDataRow = allTableRows.get(rowIndex);
                     final String upiText = (String) investmentDataRow.findCellForColumn(activeUPIColumn).getValue("");
-                    final UPI upi = DataFormatFactory.getInstance().createUPI(parameters.getBudgetYear(), upiText, parameters.getAgencyCode());
+                    final UPI upi = DataFormatFactory.getInstance().createUPI(parameters.getBudgetYear(), upiText, parameters);
 
                     if(! upi.isValid())
                     {
                         String[] upiIssues = upi.getIssues();
                         errors += upiIssues.length;
-                        messages.add(new DefaultOutlineValidationMessage(table, MessageCodeFactory.UPI_INVALID, "Unable to resolve investment line on row %d because UPI is invalid.", investmentDataRow.getRowNumberInSheet()));
+                        messages.add(new DefaultOutlineValidationMessage(table, MessageCodeFactory.UPI_INVALID, "Unable to resolve investment line on row %d because UPI '%s' is invalid: %s", investmentDataRow.getRowNumberInSheet(), upi.getUPIText(), Arrays.asList(upi.getIssues())));
                         continue;
                     }
 
@@ -838,13 +839,13 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                 {
                     final TableRow sectionDataRow = allTableRows.get(rowIndex);
                     final String upiText = (String) sectionDataRow.findCellForColumn(activeUPIColumn).getValue("");
-                    final UPI upi = DataFormatFactory.getInstance().createUPI(parameters.getBudgetYear(), upiText, parameters.getAgencyCode());
+                    final UPI upi = DataFormatFactory.getInstance().createUPI(parameters.getBudgetYear(), upiText, parameters);
 
                     if(! upi.isValid())
                     {
                         String[] upiIssues = upi.getIssues();
                         errors += upiIssues.length;
-                        messages.add(new DefaultOutlineValidationMessage(table, MessageCodeFactory.UPI_INVALID, "Unable to resolve mission area on row %d because UPI is invalid.", sectionDataRow.getRowNumberInSheet()));
+                        messages.add(new DefaultOutlineValidationMessage(table, MessageCodeFactory.UPI_INVALID, "Unable to resolve mission area on row %d because UPI '%s' is invalid: %s", sectionDataRow.getRowNumberInSheet(), upi.getUPIText(), Arrays.asList(upi.getIssues())));
                         continue;
                     }
 

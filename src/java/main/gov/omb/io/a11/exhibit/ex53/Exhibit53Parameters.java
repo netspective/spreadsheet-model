@@ -1,16 +1,18 @@
 package gov.omb.io.a11.exhibit.ex53;
 
+import gov.omb.data.format.micro.UPI;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.netspective.io.spreadsheet.message.Message;
 
 import java.util.List;
 
-public interface Exhibit53Parameters
+public interface Exhibit53Parameters extends UPI.ValidationRules
 {
     public int getBudgetYear();
     public String getAgencyCode();
-    public List<String> getBureauCodes();
+    public String getBureauCodes();
+    public List<String> getBureauCodesList();
 
     public Workbook getWorkbook();
     public Sheet getSheet();

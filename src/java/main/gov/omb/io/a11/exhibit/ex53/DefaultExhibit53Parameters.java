@@ -1,5 +1,6 @@
 package gov.omb.io.a11.exhibit.ex53;
 
+import gov.omb.data.format.micro.UPI;
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.DynaClass;
 import org.apache.commons.beanutils.DynaProperty;
@@ -19,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class DefaultExhibit53Parameters implements Exhibit53Parameters
+public class DefaultExhibit53Parameters implements Exhibit53Parameters, UPI.ValidationRules
 {
     protected final static String INVERTED_FLAG_PREFIX = "dont-";
     public static final Parameter[] PARAMETERS;
@@ -71,7 +72,8 @@ public class DefaultExhibit53Parameters implements Exhibit53Parameters
     private boolean debug;
     private int budgetYear;
     private String agencyCode;
-    private List<String> bureauCodes = new ArrayList<String>();
+    private String bureauCodes;
+    private List<String> bureauCodesList = new ArrayList<String>();
 
     private boolean validateAnySubtotals = true;
     private boolean validateFundingSourceSubtotals = true;
@@ -88,11 +90,11 @@ public class DefaultExhibit53Parameters implements Exhibit53Parameters
     private Workbook workbook;
     private Sheet sheet;
 
-    public DefaultExhibit53Parameters(final int budgetYear, final String agencyCode, final List<String> bureauCodes)
+    public DefaultExhibit53Parameters(final int budgetYear, final String agencyCode, final List<String> bureauCodesList)
     {
         setBudgetYear(budgetYear);
         setAgencyCode(agencyCode);
-        this.bureauCodes = bureauCodes;
+        this.bureauCodesList = bureauCodesList;
     }
 
     public DefaultExhibit53Parameters(final Map<String, String> parameters)
@@ -148,6 +150,16 @@ public class DefaultExhibit53Parameters implements Exhibit53Parameters
             for(final DynaProperty property : dynaClass.getDynaProperties())
                 errors.add(String.format("    Available property: %s (%s, %s)", property.getName(), property.getType(), property.getContentType()));
         }
+    }
+
+    public boolean isValidAgencyCode(final String code)
+    {
+        return agencyCode == null ? true : code.equals(agencyCode);
+    }
+
+    public boolean isValidBureauCode(final String code)
+    {
+        return bureauCodesList.size() == 0 ? true : bureauCodesList.contains(code); 
     }
 
     public String getWorkbookAbsolutePath()
@@ -287,16 +299,22 @@ public class DefaultExhibit53Parameters implements Exhibit53Parameters
         this.agencyCode = agencyCode;
     }
 
-    public List<String> getBureauCodes()
+    public String getBureauCodes()
     {
         return bureauCodes;
     }
 
+    public List<String> getBureauCodesList()
+    {
+        return bureauCodesList;
+    }
+
     public void setBureauCodes(final String bureauCodes)
     {
-        this.bureauCodes.clear();
+        this.bureauCodes= bureauCodes;
+        this.bureauCodesList.clear();
         if(bureauCodes != null)
-            this.bureauCodes.addAll(Arrays.asList(bureauCodes.split(",")));
+            this.bureauCodesList.addAll(Arrays.asList(bureauCodes.split(",")));
     }
 
     public boolean isValidateAnySubtotals()

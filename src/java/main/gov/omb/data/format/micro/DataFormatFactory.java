@@ -2,8 +2,6 @@ package gov.omb.data.format.micro;
 
 import gov.omb.data.format.micro.impl.DefaultUPI;
 
-import java.util.List;
-
 public class DataFormatFactory
 {
     public final static DataFormatFactory INSTANCE = new DataFormatFactory();
@@ -15,16 +13,11 @@ public class DataFormatFactory
 
     public UPI createUPI(final int budgetYear, final String rawUPI)
     {
-        return new DefaultUPI(budgetYear, rawUPI, null, null);
+        return new DefaultUPI(budgetYear, rawUPI, null);
     }
 
-    public UPI createUPI(final int budgetYear, final String rawUPI, final String validateAgencyCode)
+    public UPI createUPI(final int budgetYear, final String rawUPI, final UPI.ValidationRules validationRules)
     {
-        return new DefaultUPI(budgetYear, rawUPI, validateAgencyCode, null);
-    }
-
-    public UPI createUPI(final int budgetYear, final String rawUPI, final String validateAgencyCode, final List<String> validateBureauCodes)
-    {
-        return new DefaultUPI(budgetYear, rawUPI, validateAgencyCode, validateBureauCodes);
+        return new DefaultUPI(budgetYear, rawUPI, validationRules);
     }
 }

@@ -19,4 +19,10 @@ public interface UPI
 
     public boolean isValid();
     public String[] getIssues();
+
+    public interface ValidationRules
+    {
+        public boolean isValidAgencyCode(final String code);
+        public boolean isValidBureauCode(final String code);
+    }
 }

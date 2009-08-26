@@ -18,16 +18,14 @@ public class UpiRule implements CellValidationRule
 {
     private final CellTypeRule stringTypeRule;
     private final int budgetYear;
-    private final String agencyCode;
-    private final List<String> bureauCodes;
     private final String messageCode;
+    private final UPI.ValidationRules upiRules;
 
-    public UpiRule(final String messageCode, final int budgetYear, final String agencyCode, final List<String> bureauCodes)
+    public UpiRule(final String messageCode, final int budgetYear, final UPI.ValidationRules upiRules)
     {
         this.stringTypeRule = new CellTypeRule(messageCode, Cell.CELL_TYPE_STRING);
         this.budgetYear = budgetYear;
-        this.agencyCode = agencyCode;
-        this.bureauCodes = bureauCodes;
+        this.upiRules = upiRules;
         this.messageCode = messageCode;
     }
 
@@ -42,13 +40,7 @@ public class UpiRule implements CellValidationRule
             return true;
 
         final DataFormatFactory dataFmtFactory = DataFormatFactory.getInstance();
-        final UPI upi;
-        if(agencyCode != null && (bureauCodes != null && bureauCodes.size() > 0))
-            upi = dataFmtFactory.createUPI(budgetYear, rawUPI, agencyCode, bureauCodes);
-        else if(agencyCode != null)
-            upi = dataFmtFactory.createUPI(budgetYear, rawUPI, agencyCode);
-        else
-            upi = dataFmtFactory.createUPI(budgetYear, rawUPI);
+        final UPI upi = dataFmtFactory.createUPI(budgetYear, rawUPI);            
 
         if(! upi.isValid())
         {

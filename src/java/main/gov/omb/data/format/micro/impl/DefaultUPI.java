@@ -30,16 +30,14 @@ public class DefaultUPI implements UPI
     private final String lineType;
     private final boolean eGovInvestment;
 
-    public DefaultUPI(final int getBudgetYear, final String upiText, final String validateAgencyCode, final List<String> validateBureauCodes)
+    public DefaultUPI(final int getBudgetYear, final String upiText, final UPI.ValidationRules validationRules)
     {
         this.budgetYear = getBudgetYear;
         this.upiText = upiText;
 
         if (!upiText.matches(UPI_REG_EX))
         {
-            issues.add(String.format("UPI '%s' is not valid. It must be 17 digits and look something like '%s-%s-00-00-00-0000-00'.",
-                       upiText, validateAgencyCode == null ? "123" : validateAgencyCode,
-                       validateBureauCodes == null ? "45" : validateBureauCodes));
+            issues.add(String.format("UPI '%s' is not valid. It must be 17 digits and look something like 'AGY-BC-00-00-00-0000-00' where AGY is a valid agency code and BC is a valid bureau code.", upiText));
             agencyCode = null;
             bureauCode = null;
             partNumber = null;
@@ -53,12 +51,12 @@ public class DefaultUPI implements UPI
 
         final String[] components = upiText.split("-");
         agencyCode = components[UPI_FIELD_INDEX_AGENCY];
-        if(validateAgencyCode != null && ! agencyCode.equals(validateAgencyCode))
-            issues.add(String.format("Agency component '%s' of UPI '%s' is not valid. It should be %s.", agencyCode, upiText, validateAgencyCode));
+        if(validationRules != null && ! validationRules.isValidAgencyCode(agencyCode))
+            issues.add(String.format("Agency component '%s' of UPI '%s' is not valid.", agencyCode, upiText));
 
         bureauCode = components[UPI_FIELD_INDEX_BUREAU];
-        if(validateBureauCodes != null && ! validateBureauCodes.contains(bureauCode))
-            issues.add(String.format("Bureau component '%s' of UPI '%s' is not valid. It should be %s.", bureauCode, upiText, validateBureauCodes));
+        if(validationRules != null && ! validationRules.isValidBureauCode(bureauCode))
+            issues.add(String.format("Bureau component '%s' of UPI '%s' is not valid.", bureauCode, upiText));
 
         partNumber = components[UPI_FIELD_INDEX_PART_NUMBER];
         missionArea = components[UPI_FIELD_INDEX_MISSION_AREA];
