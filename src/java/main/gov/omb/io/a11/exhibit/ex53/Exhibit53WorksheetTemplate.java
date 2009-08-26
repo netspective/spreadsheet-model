@@ -415,6 +415,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
         private final List<TableOutlineNode> rootNodes = new ArrayList<TableOutlineNode>();
         private final List<OutlineValidationMessage> messages;
         private final Map<String, List<TableRow>> uniqueInvestmentIds = new HashMap<String, List<TableRow>>();
+        private final Portfolio portfolio;
 
         public Exhibit53(final Table table, final List<OutlineValidationMessage> messages)
         {
@@ -423,10 +424,18 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
 
             final TableRow portfolioRow = findUniqueRow(table, portfolioSectionsCache, PortfolioSectionsCache.AGENCY_TOTAL_IT_INVESTMENT_PORTFOLIO, messages);
             if(portfolioRow == null)
+            {
+                portfolio = null;
                 return;
+            }
 
-            final Portfolio portfolio = new Portfolio(portfolioRow);
+            portfolio = new Portfolio(portfolioRow);
             rootNodes.add(portfolio);
+        }
+
+        public Portfolio getPortfolio()
+        {
+            return portfolio;
         }
 
         public Table getTable()
