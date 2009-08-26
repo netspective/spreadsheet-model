@@ -641,8 +641,8 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
             private final int lastDataRowIndexInTable;
             private final List<TableOutlineNode> investments = new ArrayList<TableOutlineNode>();
 
-            protected Investments(final TableRow investmentsRow, final String partId, final String missionAreaId,
-                                  final int groupFirstDataRowIndex, final int groupLastDataRowIndex)
+            protected Investments(final Portfolio portfolio, final TableRow investmentsRow, final String partId,
+                                  final String missionAreaId, final int groupFirstDataRowIndex, final int groupLastDataRowIndex)
             {
                 this.investmentsRow = investmentsRow;
                 this.partId = partId;
@@ -719,7 +719,9 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                         final TableRow investmentTypeStartRow = investmentRows.get(i);
                         final int invLinesFirstDataRowIndex = allTableRows.indexOf(investmentTypeStartRow) + 1;
                         final int invLinesLastDataRowIndex = (isLast ? groupLastDataRowIndex : (allTableRows.indexOf(investmentRows.get(i+1))-1));
-                        investments.add(new Investment(investmentTypeStartRow, invLinesFirstDataRowIndex, invLinesLastDataRowIndex));
+                        final Investment investment = new Investment(investmentTypeStartRow, invLinesFirstDataRowIndex, invLinesLastDataRowIndex);
+                        investments.add(investment);
+                        portfolio.getInvestments().add(investment);
                     }
                 }
             }
@@ -758,7 +760,8 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
             private final int lastDataRowIndexInTable;
             private final List<TableOutlineNode> missionAreas = new ArrayList<TableOutlineNode>();
 
-            public MissionAreas(final TableRow missionAreasRow, final String partId, final int firstDataRowIndexInPart, final int lastDataRowIndexInPart)
+            public MissionAreas(final Portfolio portfolio, final TableRow missionAreasRow, final String partId,
+                                final int firstDataRowIndexInPart, final int lastDataRowIndexInPart)
             {
                 this.missionAreasRow = missionAreasRow;
                 this.partId = partId;
@@ -807,7 +810,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                         final TableRow missionAreaStartRow = missionAreaRows.get(i);
                         final int investmentFirstDataRowIndex = allTableRows.indexOf(missionAreaStartRow) + 1;
                         final int investmentLastDataRowIndex = (isLast ? lastDataRowIndexInPart : allTableRows.indexOf(missionAreaRows.get(i+1))-1);
-                        missionAreas.add(new Investments(missionAreaStartRow, partId, missionAreaIds.get(i), investmentFirstDataRowIndex, investmentLastDataRowIndex));
+                        missionAreas.add(new Investments(portfolio, missionAreaStartRow, partId, missionAreaIds.get(i), investmentFirstDataRowIndex, investmentLastDataRowIndex));
                     }
                 }
             }
@@ -843,6 +846,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
             private final int firstDataRowIndexInTable;
             private final int lastDataRowIndexInTable;
             private final List<TableOutlineNode> parts = new ArrayList<TableOutlineNode>();
+            private final List<Investment> investments = new ArrayList<Investment>();
 
             protected Portfolio(final TableRow portfolioRow)
             {
@@ -881,15 +885,16 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                         final int firstDataRowIndex = allTableRows.indexOf(partStartRow) + 1;
                         final int lastDataRowIndex = (isLast ? allTableRows.size() : allTableRows.indexOf(portfolioSectionRows.get(sectionNum+1))) - 1;
                         if(sectionNum == 0)
-                            parts.add(new MissionAreas(partStartRow, String.format("%02d", sectionNum+1), firstDataRowIndex, lastDataRowIndex));
+                            parts.add(new MissionAreas(this, partStartRow, String.format("%02d", sectionNum+1), firstDataRowIndex, lastDataRowIndex));
                         else
-                            parts.add(new Investments(partStartRow, String.format("%02d", sectionNum+1), null, firstDataRowIndex, lastDataRowIndex));
+                            parts.add(new Investments(this, partStartRow, String.format("%02d", sectionNum+1), null, firstDataRowIndex, lastDataRowIndex));
                     }
                 }
             }
 
             public TableRow getTableRow() { return portfolioRow; }
             public List<TableOutlineNode> getChildren() { return parts; }
+            public List<Investment> getInvestments() { return investments; }
             public int getFirstDataRowIndexInTable() { return firstDataRowIndexInTable; }
             public int getLastDataRowIndexInTable() { return lastDataRowIndexInTable; }
 
