@@ -8,7 +8,7 @@
     <property name="module.build.deploy.main.home"  value="${module.build.home}/tmp/deploy"/>
     <property name="module.lib.home"                value="${module.home}/lib"/>
     <property name="module.jar.home"                value="${module.lib.home}"/>
-    <property name="module.jar.name"                value="spreadsheet-model.jar"/>
+    <property name="module.jar.name"                value="ex53-validator.jar"/>
 
     <propertyfile file="${module.src.main.home}/org/netspective/io/spreadsheet/PackageAttributes.properties">
         <entry key="build.number" type="int" default="0" operation="+"/>

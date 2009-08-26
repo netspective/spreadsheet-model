@@ -15,6 +15,7 @@ public interface UPI
     public String getLineType();
     public boolean isFundingSourceLine();
     public boolean isSubtotalLine();
+    public boolean isEGovInvesment();
 
     public boolean isValid();
     public String[] getIssues();

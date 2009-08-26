@@ -23,8 +23,9 @@ public class MessageCodeFactory
     public static final String INVESTMENTS_ROW_SUBTOTAL_INVALID = "E-INVS-0000";
     public static final String INVESTMENTS_ROW_COLUMN_SUBTOTAL_INVALID = "E-INVS-0001";
 
-    public static final String MISSAREA_ROW_SUBTOTAL_INVALID = "E-MISSA-0000";
-    public static final String MISSAREA_ROW_COLUMN_SUBTOTAL_INVALID = "E-MISSA-0001";
+    public static final String MISSAREA_PART_MISSING = "E-MISSA-0000";
+    public static final String MISSAREA_ROW_SUBTOTAL_INVALID = "E-MISSA-0001";
+    public static final String MISSAREA_ROW_COLUMN_SUBTOTAL_INVALID = "E-MISSA-0002";
 
     public static final String PART_ROW_SUBTOTAL_INVALID = "E-PART-0000";
     public static final String PART_ROW_COLUMN_SUBTOTAL_INVALID = "E-PART-0001";

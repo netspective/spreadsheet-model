@@ -28,6 +28,7 @@ public class DefaultUPI implements UPI
     private final String investmentType;
     private final String identificationNumber;
     private final String lineType;
+    private final boolean eGovInvestment;
 
     public DefaultUPI(final int getBudgetYear, final String upiText, final String validateAgencyCode, final List<String> validateBureauCodes)
     {
@@ -46,6 +47,7 @@ public class DefaultUPI implements UPI
             investmentType = null;
             identificationNumber = null;
             lineType = null;
+            eGovInvestment = false;
             return;
         }
 
@@ -72,7 +74,9 @@ public class DefaultUPI implements UPI
                 && !investmentType.equals("03") && !investmentType.equals("04"))
             issues.add(String.format("Investment type component '%s' of UPI '%s' is not valid. It should be 00, 01, 02, 03, or 04.", investmentType, upiText));
 
-        if (!lineType.equals("00") && !lineType.equals("04") && !lineType.equals("09") && !lineType.equals(EGOV_LINETYPE))
+        eGovInvestment = lineType.equals(EGOV_LINETYPE);
+
+        if (!lineType.equals("00") && !lineType.equals("04") && !lineType.equals("09") && !eGovInvestment)
             issues.add(String.format("Investment line type component '%s' of UPI '%s' is not valid. It should be 00, 04, or 09, or 24.", lineType, upiText));
     }
 
@@ -129,6 +133,11 @@ public class DefaultUPI implements UPI
     public boolean isSubtotalLine()
     {
         return lineType != null && lineType.equals("09");
+    }
+
+    public boolean isEGovInvesment()
+    {
+        return eGovInvestment;
     }
 
     public boolean isValid()

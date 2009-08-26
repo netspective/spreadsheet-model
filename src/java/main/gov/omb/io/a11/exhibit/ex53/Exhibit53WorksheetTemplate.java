@@ -252,6 +252,56 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
         return parameters.isWarning(message, message.getCode().startsWith("W-"));
     }
 
+    public Column getActiveUPIColumn()
+    {
+        return activeUPIColumn;
+    }
+
+    public Column getInvestmentTitleColumn()
+    {
+        return investmentTitleColumn;
+    }
+
+    public Column getDescrColumn()
+    {
+        return descrColumn;
+    }
+
+    public Column getHomelandSecurityPrioritiesColumn()
+    {
+        return homelandSecurityPrioritiesColumn;
+    }
+
+    public Column getFinSystemPctColumn()
+    {
+        return finSystemPctColumn;
+    }
+
+    public Column getSegArchColumn()
+    {
+        return segArchColumn;
+    }
+
+    public Column getFeaLobColumn()
+    {
+        return feaLobColumn;
+    }
+
+    public Column getFeaSubFColumn()
+    {
+        return feaSubFColumn;
+    }
+
+    public List<Column> getInvAmtsRollupColumns()
+    {
+        return invAmtsRollupColumns;
+    }
+
+    public Exhibit53Parameters getParameters()
+    {
+        return parameters;
+    }
+
     public class PortfolioSectionsCache implements TableRowCache
     {
         private static final String AGENCY_TOTAL_IT_INVESTMENT_PORTFOLIO = "Agency Total IT Investment Portfolio";
@@ -759,6 +809,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
             public List<TableOutlineNode> getChildren() { return investments; }
             public int getFirstDataRowIndexInTable() { return firstDataRowIndexInTable; }
             public int getLastDataRowIndexInTable() { return lastDataRowIndexInTable; }
+            public String getMissionAreaId() { return missionAreaId; }
         }
 
         public class MissionAreas implements Exhibit53Part
@@ -768,6 +819,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
             private final int firstDataRowIndexInTable;
             private final int lastDataRowIndexInTable;
             private final List<TableOutlineNode> missionAreas = new ArrayList<TableOutlineNode>();
+            private final Map<String, Investments> missionAreasById = new HashMap<String, Investments>();
 
             public MissionAreas(final Portfolio portfolio, final TableRow missionAreasRow, final String partId,
                                 final int firstDataRowIndexInPart, final int lastDataRowIndexInPart)
@@ -819,7 +871,9 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                         final TableRow missionAreaStartRow = missionAreaRows.get(i);
                         final int investmentFirstDataRowIndex = allTableRows.indexOf(missionAreaStartRow) + 1;
                         final int investmentLastDataRowIndex = (isLast ? lastDataRowIndexInPart : allTableRows.indexOf(missionAreaRows.get(i+1))-1);
-                        missionAreas.add(new Investments(portfolio, missionAreaStartRow, partId, missionAreaIds.get(i), investmentFirstDataRowIndex, investmentLastDataRowIndex));
+                        final Investments investments = new Investments(portfolio, missionAreaStartRow, partId, missionAreaIds.get(i), investmentFirstDataRowIndex, investmentLastDataRowIndex);
+                        missionAreas.add(investments);
+                        missionAreasById.put(investments.getMissionAreaId(), investments);
                     }
                 }
             }
@@ -829,6 +883,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
             public List<TableOutlineNode> getChildren() { return missionAreas; }
             public int getFirstDataRowIndexInTable() { return firstDataRowIndexInTable; }
             public int getLastDataRowIndexInTable() { return lastDataRowIndexInTable; }
+            public Investments getMissionAreaInvestments(final String areaId) { return missionAreasById.get(areaId); }
 
             public boolean isValid(final ValidationContext vc, final List<NodeValidationMessage> messages)
             {
@@ -856,6 +911,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
             private final int lastDataRowIndexInTable;
             private final List<TableOutlineNode> parts = new ArrayList<TableOutlineNode>();
             private final List<Investment> investments = new ArrayList<Investment>();
+            private MissionAreas missionAreas;
 
             protected Portfolio(final TableRow portfolioRow)
             {
@@ -894,11 +950,17 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                         final int firstDataRowIndex = allTableRows.indexOf(partStartRow) + 1;
                         final int lastDataRowIndex = (isLast ? allTableRows.size() : allTableRows.indexOf(portfolioSectionRows.get(sectionNum+1))) - 1;
                         if(sectionNum == 0)
-                            parts.add(new MissionAreas(this, partStartRow, String.format("%02d", sectionNum+1), firstDataRowIndex, lastDataRowIndex));
+                        {
+                            missionAreas = new MissionAreas(this, partStartRow, String.format("%02d", sectionNum + 1), firstDataRowIndex, lastDataRowIndex);
+                            parts.add(missionAreas);
+                        }
                         else
                             parts.add(new Investments(this, partStartRow, String.format("%02d", sectionNum+1), null, firstDataRowIndex, lastDataRowIndex));
                     }
                 }
+
+                if(missionAreas == null)
+                    messages.add(new DefaultOutlineValidationMessage(getTable(), MessageCodeFactory.MISSAREA_PART_MISSING, "Unable to find mission area part."));
             }
 
             public TableRow getTableRow() { return portfolioRow; }
@@ -906,6 +968,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
             public List<Investment> getInvestments() { return investments; }
             public int getFirstDataRowIndexInTable() { return firstDataRowIndexInTable; }
             public int getLastDataRowIndexInTable() { return lastDataRowIndexInTable; }
+            public MissionAreas getMissionAreas() { return missionAreas; }
 
             public boolean isValid(final ValidationContext vc, final List<NodeValidationMessage> messages)
             {
