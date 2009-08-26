@@ -159,7 +159,7 @@ public class DefaultExhibit53Parameters implements Exhibit53Parameters, UPI.Vali
 
     public boolean isValidBureauCode(final String code)
     {
-        return bureauCodesList.size() == 0 ? true : bureauCodesList.contains(code); 
+        return bureauCodesList == null || bureauCodesList.size() == 0 ? true : bureauCodesList.contains(code); 
     }
 
     public String getWorkbookAbsolutePath()
