@@ -31,6 +31,7 @@ public class Exhibit53Validator
 {
     public static void main(final String[] args) throws ParseException, IOException, InvalidFormatException
     {
+        System.out.printf("OMB eGov Exhibit 53 Validation Utility %s built on %s\n", PackageAttributes.PACKAGE.getVersion(), PackageAttributes.PACKAGE.getBuildDate());
         final FEACodesManager feaCodesManager = FEACodesManager.getInstance();
         if(! feaCodesManager.isValid())
         {
@@ -40,7 +41,7 @@ public class Exhibit53Validator
             return;
         }
         else
-            System.err.printf("Cached %d LOB/Svc Type codes and %d Sub-function/Components codes.\n",
+            System.out.printf("Cached %d LOB/Svc Type codes and %d Sub-function/Components codes.\n",
                     feaCodesManager.getLineOfBusinessOrServiceTypesCache().size(),
                     feaCodesManager.getSubFunctionOrSvcComponentsCache().size());            
 
@@ -131,8 +132,7 @@ public class Exhibit53Validator
         final HelpFormatter formatter = new HelpFormatter();
         formatter.setWidth(120);
         final PackageAttributes packageAttrs = PackageAttributes.PACKAGE;
-        formatter.printHelp(String.format("Exhibit53Validator %s --workbook-name Exhibit53.xls --budget-year=2011 --agency-code=123", packageAttrs.getVersion()), options);
-        System.out.printf("The library was built on %s.\n", packageAttrs.getBuildDate());
+        formatter.printHelp(String.format("Exhibit53Validator --workbook-name Exhibit53.xls --budget-year=2011 --agency-code=123", packageAttrs.getVersion()), options);
     }
 
     public static class SimpleValidationReporter implements WorksheetConsumerStageHandler
