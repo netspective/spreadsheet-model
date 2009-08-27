@@ -759,7 +759,8 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                                 if(dupeRowNumbers.length() > 0) dupeRowNumbers.append(", ");
                                 dupeRowNumbers.append(dupeRow.getRowNumberInSheet());
                             }
-                            messages.add(new DefaultOutlineValidationMessage(table, MessageCodeFactory.UPI_INV_ID_DUPLICATED, "Investment ID '%s' duplicated on row %d. Already exists on %s.", upi.getInvestmentIdentificationNumber(), investmentDataRow.getRowNumberInSheet(), dupeRowNumbers));
+                            // TODO: figure out how to check duplicate IDs. Bill Curtis said just turn it off for now.
+                            // messages.add(new DefaultOutlineValidationMessage(table, MessageCodeFactory.UPI_INV_ID_DUPLICATED, "Investment ID '%s' duplicated on row %d. Already exists on %s.", upi.getInvestmentIdentificationNumber(), investmentDataRow.getRowNumberInSheet(), dupeRowNumbers));
                             duplicateIdRows.add(investmentDataRow);
                         }
                         else
