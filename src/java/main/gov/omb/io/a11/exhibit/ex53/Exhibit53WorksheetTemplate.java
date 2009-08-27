@@ -752,7 +752,6 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                         final List<TableRow> duplicateIdRows = uniqueInvestmentIds.get(upi.getInvestmentIdentificationNumber());
                         if(duplicateIdRows != null)
                         {
-                            errors++;
                             final StringBuilder dupeRowNumbers = new StringBuilder();
                             for(final TableRow dupeRow : duplicateIdRows)
                             {
@@ -760,6 +759,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                                 dupeRowNumbers.append(dupeRow.getRowNumberInSheet());
                             }
                             // TODO: figure out how to check duplicate IDs. Bill Curtis said just turn it off for now.
+                            // errors++;
                             // messages.add(new DefaultOutlineValidationMessage(table, MessageCodeFactory.UPI_INV_ID_DUPLICATED, "Investment ID '%s' duplicated on row %d. Already exists on %s.", upi.getInvestmentIdentificationNumber(), investmentDataRow.getRowNumberInSheet(), dupeRowNumbers));
                             duplicateIdRows.add(investmentDataRow);
                         }
