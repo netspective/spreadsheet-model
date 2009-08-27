@@ -92,7 +92,7 @@ public class DefaultWorksheetDataHandler implements WorksheetDataHandler
                             break;
                     }
 
-                    return new DefaultTableRow(dataRow, cellsInRow);
+                    return new DefaultTableRow(worksheetTemplate, dataRow, cellsInRow);
                 }
             };
         }

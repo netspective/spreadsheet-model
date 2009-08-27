@@ -4,6 +4,7 @@ import org.netspective.io.spreadsheet.model.Table;
 import org.netspective.io.spreadsheet.model.TableCell;
 import org.netspective.io.spreadsheet.model.TableRow;
 import org.netspective.io.spreadsheet.template.Column;
+import org.netspective.io.spreadsheet.util.Util;
 import org.netspective.io.spreadsheet.validate.ValidationContext;
 import org.netspective.io.spreadsheet.validate.cell.CellValidationMessage;
 import org.netspective.io.spreadsheet.validate.cell.CellValidationRule;
@@ -35,7 +36,22 @@ public class ValidateColumnData implements RowValidationRule
             for(final CellValidationRule cvr : rules)
             {
                 // validate and store the messages in appropriate error/warning list
-                cvr.isValid(vc, table, row, cell, cellMessages);
+                try
+                {
+                    cvr.isValid(vc, table, row, cell, cellMessages);
+                }
+                catch (final Exception e)
+                {
+                    e.printStackTrace();
+                    messages.add(new RowValidationMessage()
+                    {
+                        public TableRow getRow() { return row; }
+                        public CellValidationMessage[] getCellValidationErrors() { return new CellValidationMessage[0]; }
+                        public String getCode() { return messageCode; }
+                        public String getMessage() { return String.format("Exception on row %d cell %d running rule %s.isValid(): %s (%s)", row.getRowNumberInSheet(), Util.getCellLocator(cell.getCell())); }
+                        public String toString() { return getMessage(); }
+                    });
+                }
             }
         }
 
@@ -44,32 +60,11 @@ public class ValidateColumnData implements RowValidationRule
             final CellValidationMessage[] validationMessages = cellMessages.toArray(new CellValidationMessage[cellMessages.size()]);
             messages.add(new RowValidationMessage()
             {
-                public TableRow getRow()
-                {
-                    return row;
-                }
-
-                public CellValidationMessage[] getCellValidationErrors()
-                {
-                    return validationMessages;
-                }
-
-                public String getCode()
-                {
-                    return messageCode;
-                }
-
-                public String getMessage()
-                {
-                    // null means that we won't report this message, only the children through getCellValidationErrors
-                    return null;
-                }
-
-                @Override
-                public String toString()
-                {
-                    return getMessage();
-                }
+                public TableRow getRow() { return row; }
+                public CellValidationMessage[] getCellValidationErrors() { return validationMessages; }
+                public String getCode() { return messageCode; }
+                public String getMessage() { return null; /* null means that we won't report this message, only the children through getCellValidationErrors */ }
+                public String toString() { return getMessage(); }
             });
         }
 
