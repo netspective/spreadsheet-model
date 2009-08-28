@@ -743,31 +743,31 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                         continue;
                     }
 
-                    final String thisRowInvestmentID = String.format("%s-%s", upi.getInvestmentTypeIdentifier(), upi.getInvestmentIdentificationNumber());
+                    final String thisRowInvestmentID = String.format("%s-%s-%s-%s", upi.getAgencyCode(), upi.getBureauCode(), upi.getInvestmentTypeIdentifier(), upi.getInvestmentIdentificationNumber());
                     if(! activeInvestment.equals(thisRowInvestmentID))
                     {
                         activeInvestment = thisRowInvestmentID;
                         investmentRows.add(investmentDataRow);
 
-                        final List<TableRow> duplicateIdRows = uniqueInvestmentIds.get(upi.getInvestmentIdentificationNumber());
+                        final String duplicateKeyValue = upi.getUPIText();
+                        final List<TableRow> duplicateIdRows = uniqueInvestmentIds.get(duplicateKeyValue);
                         if(duplicateIdRows != null)
                         {
+                            errors++;
                             final StringBuilder dupeRowNumbers = new StringBuilder();
                             for(final TableRow dupeRow : duplicateIdRows)
                             {
                                 if(dupeRowNumbers.length() > 0) dupeRowNumbers.append(", ");
                                 dupeRowNumbers.append(dupeRow.getRowNumberInSheet());
                             }
-                            // TODO: figure out how to check duplicate IDs. Bill Curtis said just turn it off for now.
-                            // errors++;
-                            // messages.add(new DefaultOutlineValidationMessage(table, MessageCodeFactory.UPI_INV_ID_DUPLICATED, "Investment ID '%s' duplicated on row %d. Already exists on %s.", upi.getInvestmentIdentificationNumber(), investmentDataRow.getRowNumberInSheet(), dupeRowNumbers));
+                            messages.add(new DefaultOutlineValidationMessage(table, MessageCodeFactory.UPI_INV_ID_DUPLICATED, "Investment ID '%s' duplicated on row %d. Already exists on %s.", upi.getInvestmentIdentificationNumber(), investmentDataRow.getRowNumberInSheet(), dupeRowNumbers));
                             duplicateIdRows.add(investmentDataRow);
                         }
                         else
                         {
                             final List<TableRow> idOnRows = new ArrayList<TableRow>();
                             idOnRows.add(investmentDataRow);
-                            uniqueInvestmentIds.put(upi.getInvestmentIdentificationNumber(), idOnRows);
+                            uniqueInvestmentIds.put(duplicateKeyValue, idOnRows);
                         }
                     }
                 }
