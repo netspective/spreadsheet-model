@@ -558,7 +558,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                         lines.add(new Subtotal(investmentDataRow, rowIndex, rowIndex));
                     else
                     {
-                        messages.add(new DefaultOutlineValidationMessage(table, MessageCodeFactory.UPI_INV_LINE_TYPE_INVALID, "Unable to resolve investment line on row %d: don't know what to do with line type '%s'.", investmentDataRow.getRowNumberInSheet(), upi.getLineType()));
+                        messages.add(new DefaultOutlineValidationMessage(table, MessageCodeFactory.UPI_INV_LINE_TYPE_INVALID, "Unable to resolve investment line on row %d: don't know what to do with line type '%s'. Expecting a funding source or subtotal line.", investmentDataRow.getRowNumberInSheet(), upi.getLineType()));
                     }
                 }
 
