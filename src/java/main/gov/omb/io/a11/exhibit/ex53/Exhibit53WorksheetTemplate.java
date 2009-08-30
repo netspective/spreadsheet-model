@@ -959,10 +959,10 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                         else
                             parts.add(new Investments(this, partStartRow, String.format("%02d", sectionNum+1), null, firstDataRowIndex, lastDataRowIndex));
                     }
-                }
 
-                if(missionAreas == null)
-                    messages.add(new DefaultOutlineValidationMessage(getTable(), MessageCodeFactory.MISSAREA_PART_MISSING, "Unable to find mission area part."));
+                    if(missionAreas == null)
+                        messages.add(new DefaultOutlineValidationMessage(getTable(), MessageCodeFactory.MISSAREA_PART_MISSING, "'Part 1 - IT Investments by Mission Area' is a required component of the sheet but was not found."));
+                }
             }
 
             public TableRow getTableRow() { return portfolioRow; }
