@@ -65,7 +65,8 @@ public class DefaultWorksheetDataHandler implements WorksheetDataHandler
             int blankCount = 0;
             for(int checkColumn : lastRowIfTheseColumnsAreBlank)
             {
-                if(dataRow.getCell(checkColumn-1).getCellType() == Cell.CELL_TYPE_BLANK)
+                final Cell cell = dataRow.getCell(checkColumn - 1);
+                if(cell == null || cell.getCellType() == Cell.CELL_TYPE_BLANK)
                     blankCount++;
             }
 
