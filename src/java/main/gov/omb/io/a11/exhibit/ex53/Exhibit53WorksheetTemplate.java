@@ -563,7 +563,7 @@ public class Exhibit53WorksheetTemplate implements TableOutlineCreator, Workshee
                 }
 
                 final TextRegExRule descrTruncatedRule = new TextRegExRule(MessageCodeFactory.DESCR_TRUNCATED, ".+[\\.\\!\\?\\(\\)\\{\\}\\[\\]\\<\\>\\'\\\"]$", "An investment description value seems to be truncated at %s. Please ensure that it is properly summarized, and not simply truncated (should end with proper sentence punctuation like with the following valid characters: . , ! ? ( ) { } [ ] < > ' \").");
-                final TextRegExRule segArchRule = new TextRegExRule(MessageCodeFactory.SEG_ARCH_INVALID_CODE, "^[0-9]{3}-[0]{3}$", "Invalid segement architecture code '%2$s' at %1$s. It should look like ###-000.");
+                final TextRegExRule segArchRule = new TextRegExRule(MessageCodeFactory.SEG_ARCH_INVALID_CODE, "^[0-9]{3}-0[01][0-9]$", "Invalid segement architecture code '%2$s' at %1$s. It should look like ###-000, ###-001, etc. upt to ###-019");
                 final Set<Integer> validHSPriorities = new HashSet<Integer>();
                 for(int i = 1; i <= 6; i++) validHSPriorities.add(i);
 
